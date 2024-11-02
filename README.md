@@ -1,4 +1,4 @@
-# Task Master
+# Task Master App
 
 ## Version notes
 - node: v20.18.0
