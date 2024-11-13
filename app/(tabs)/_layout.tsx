@@ -33,7 +33,8 @@ export default function TabLayout() {
       <Tabs.Screen 
         name="(teams)"
         options={{
-          tabBarIcon: ({ focused }) => focused ? <HomeFillIcon/> : <HomeIcon/>
+          tabBarIcon: ({ focused }) => focused ? <HomeFillIcon/> : <HomeIcon/>,
+          href: null,
         }}
       />
       <Tabs.Screen 
