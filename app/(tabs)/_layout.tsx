@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ headerShown: false}}>
+    <Tabs screenOptions={{ headerShown: false, tabBarShowLabel: false }}>
       <Tabs.Screen name="(home)"/>
       <Tabs.Screen name="(calendar)"/>
       <Tabs.Screen name="(tasks)"/>
