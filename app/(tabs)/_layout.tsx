@@ -15,31 +15,31 @@ export default function TabLayout() {
       <Tabs.Screen 
         name="(home)"
         options={{ 
-          tabBarIcon: () => <HomeFillIcon/>
+          tabBarIcon: ({ focused }) => focused ? <HomeFillIcon/> : <HomeIcon/>
         }}
       />
       <Tabs.Screen 
         name="(calendar)"
         options={{
-          tabBarIcon: () => <CalendarIcon/>
+          tabBarIcon: ({ focused }) => focused ? <CalendarFillIcon/> : <CalendarIcon/>
         }}
       />
       <Tabs.Screen 
         name="(tasks)"
         options={{
-          tabBarIcon: () => <TasksIcon/>
+          tabBarIcon: ({ focused }) => focused ? <TasksFillIcon/> : <TasksIcon/>
         }}
       />
       <Tabs.Screen 
         name="(teams)"
         options={{
-          tabBarIcon: () => <HomeIcon/>
+          tabBarIcon: ({ focused }) => focused ? <HomeFillIcon/> : <HomeIcon/>
         }}
       />
       <Tabs.Screen 
         name="(profile)"
         options={{
-          tabBarIcon: () => <ProfileIcon/>
+          tabBarIcon: ({ focused }) => focused ? <ProfileFillIcon/> : <ProfileIcon/>
         }}
       />
     </Tabs>
