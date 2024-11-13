@@ -1,12 +1,15 @@
+import { Link } from 'expo-router';
 import { Image, StyleSheet, Platform, View, Text } from 'react-native';
 
-export default function HomeScreen() {
+const TeamsScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>Hello world</Text>
+      <Text>Teams</Text>
     </View>
-  );
+  )
 }
+
+export default TeamsScreen;
 
 const styles = StyleSheet.create({
   container: {
