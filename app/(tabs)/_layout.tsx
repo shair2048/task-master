@@ -8,10 +8,13 @@ import TasksFillIcon from '../../assets/images/tasks-fill-icon.svg';
 import ProfileIcon from '../../assets/images/profile-icon.svg';
 import ProfileFillIcon from '../../assets/images/profile-fill-icon.svg';
 
+export const unstable_settings = {
+  initialRouteName: '(home)/index',
+};
 
 export default function TabLayout() {
   return (
-    <Tabs initialRouteName= "home" screenOptions={{ headerShown: false, tabBarShowLabel: false }}>
+    <Tabs screenOptions={{ headerShown: false, tabBarShowLabel: false }}>
       <Tabs.Screen 
         name="(home)"
         options={{ 
