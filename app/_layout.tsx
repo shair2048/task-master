@@ -58,7 +58,7 @@ export default function RootLayout() {
 
                   <View style={textStyles.baseText}>
                     <Text style={textStyles.nameFont}>Tonald Drump</Text>
-                    <Text style={textStyles.roleFont}>Leader</Text>
+                    <Text style={textStyles.roleFont}>Personally</Text>
                   </View>
                 </TouchableOpacity>
 
