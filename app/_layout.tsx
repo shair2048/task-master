@@ -48,41 +48,28 @@ export default function RootLayout() {
           // ),
           header: (props) => (
             <SafeAreaView>
-              <View
-                style={{
-                  height: 80,
-                  backgroundColor: "white",
-                  flexDirection: "row",
-                  paddingHorizontal: 20,
-                  // paddingVertical: 16,
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  // paddingTop:
-                  //   Platform.OS === "android" ? StatusBar.currentHeight : 0,
-                }}
-              >
-                <TouchableOpacity
-                  onPress={() => {}}
-                  style={{ flexDirection: "row", alignItems: "center" }}
-                >
+              <View style={[styles.header, styles.container]}>
+                <TouchableOpacity onPress={() => {}} style={styles.container}>
                   {/* <Image
                     source={require("../assets/images/default-avt.png")}
                     style={{ width: 44, height: 44, borderRadius: 100 }}
                   /> */}
                   <DefaultAvatar />
-                  <Text
-                    style={{ fontWeight: 500, fontSize: 16, marginLeft: 9 }}
-                  >
-                    Tonald Drump
-                  </Text>
+
+                  <View style={textStyles.baseText}>
+                    <Text style={textStyles.nameFont}>Tonald Drump</Text>
+                    <Text style={textStyles.roleFont}>Leader</Text>
+                  </View>
                 </TouchableOpacity>
-                <View style={{ flexDirection: "row" }}>
+
+                <View style={styles.container}>
                   <TouchableOpacity
                     onPress={() => {}}
                     style={{ marginRight: 26 }}
                   >
                     <Message />
                   </TouchableOpacity>
+
                   <TouchableOpacity onPress={() => {}}>
                     <Notification />
                   </TouchableOpacity>
@@ -95,3 +82,35 @@ export default function RootLayout() {
     </Stack>
   );
 }
+
+const textStyles = StyleSheet.create({
+  baseText: {
+    marginLeft: 9,
+    flexDirection: "column",
+  },
+  nameFont: {
+    fontWeight: "500",
+    fontSize: 16,
+  },
+  roleFont: {
+    fontWeight: "500",
+    fontSize: 12,
+    color: "#6E62FF",
+  },
+});
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  header: {
+    height: 80,
+    backgroundColor: "white",
+    paddingHorizontal: 20,
+    // paddingVertical: 16,
+    justifyContent: "space-between",
+    // paddingTop:
+    //   Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+});
