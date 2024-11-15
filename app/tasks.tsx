@@ -1,10 +1,17 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import CalendarFillIcon from "../assets/images/calendar-fill-icon.svg";
+import { useRouter } from "expo-router";
 
 const Tasks = () => {
+  const router = useRouter();
+
+  const handlePress = () => {
+    router.push("/(tabs)/(tasks)");
+  };
+
   return (
-    <TouchableOpacity onPress={() => {}} style={taskInfoStyles.taskInfo}>
+    <TouchableOpacity onPress={handlePress} style={taskInfoStyles.taskInfo}>
       <Text style={taskInfoStyles.taskTitle}>Wiring Dashboard Analytics</Text>
       <View style={{ flexDirection: "row", gap: 12 }}>
         <Text style={taskInfoStyles.taskTag}>In Progress</Text>
