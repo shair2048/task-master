@@ -7,7 +7,7 @@ const Tasks = () => {
   const router = useRouter();
 
   const handlePress = () => {
-    router.push("/(tabs)/(tasks)");
+    router.push("/task-details");
   };
 
   return (
@@ -35,7 +35,7 @@ export default Tasks;
 const taskInfoStyles = StyleSheet.create({
   taskInfo: {
     padding: 12,
-    marginTop: 12,
+    // marginTop: 12,
     gap: 12,
     backgroundColor: "#F9FAFB",
     borderRadius: 12,

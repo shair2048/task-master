@@ -79,6 +79,7 @@ export default function RootLayout() {
           ),
         }}
       />
+      {/* <Stack.Screen name="task-details" /> */}
     </Stack>
   );
 }

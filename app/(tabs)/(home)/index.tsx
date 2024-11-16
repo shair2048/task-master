@@ -5,10 +5,12 @@ import { Image, StyleSheet, Platform, View, Text } from "react-native";
 const HomeScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={textStyles.textTitle}>Today Tasks</Text>
-      <Text style={textStyles.textDescription}>
-        The tasks assigned to you for today
-      </Text>
+      <View>
+        <Text style={textStyles.textTitle}>Today Tasks</Text>
+        <Text style={textStyles.textDescription}>
+          The tasks assigned to you for today
+        </Text>
+      </View>
       <Tasks />
     </View>
   );
@@ -25,6 +27,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
+    gap: 12,
     backgroundColor: "white",
     borderRadius: 8,
   },
