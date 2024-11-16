@@ -11,17 +11,24 @@ import {
 
 const HomeScreen = () => {
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View>
-          <Text style={textStyles.textTitle}>Today Tasks</Text>
-          <Text style={textStyles.textDescription}>
-            The tasks assigned to you for today
-          </Text>
+    <View style={{ flex: 1 }}>
+      <ScrollView>
+        <View style={styles.container}>
+          <View>
+            <Text style={textStyles.textTitle}>Today Tasks</Text>
+            <Text style={textStyles.textDescription}>
+              The tasks assigned to you for today
+            </Text>
+          </View>
+          <Tasks />
+          <Tasks />
+          <Tasks />
+          <Tasks />
+          <Tasks />
+          <Tasks />
         </View>
-        <Tasks />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 

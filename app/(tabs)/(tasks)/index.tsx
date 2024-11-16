@@ -1,3 +1,4 @@
+import CreateTaskButton from "@/app/btn-create-task";
 import Tasks from "@/app/tasks";
 import { Link } from "expo-router";
 import { useState } from "react";
@@ -35,17 +36,18 @@ const TasksScreen = () => {
   ];
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View style={progressSummaryStyles.container}>
-          <Text style={progressSummaryStyles.textTitle}>
-            Summary of Your Work
-          </Text>
-          <Text style={progressSummaryStyles.textDescription}>
-            Your current task progress
-          </Text>
-          <View style={progressSummaryStyles.tagsStyles}>
-            {/* <View style={progressSummaryStyles.tagItem}>
+    <View style={{ flex: 1 }}>
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={progressSummaryStyles.container}>
+            <Text style={progressSummaryStyles.textTitle}>
+              Summary of Your Work
+            </Text>
+            <Text style={progressSummaryStyles.textDescription}>
+              Your current task progress
+            </Text>
+            <View style={progressSummaryStyles.tagsStyles}>
+              {/* <View style={progressSummaryStyles.tagItem}>
             <Text style={progressSummaryStyles.tagTitle}>To do</Text>
             <Text style={progressSummaryStyles.tagValue}>5</Text>
           </View>
@@ -58,41 +60,53 @@ const TasksScreen = () => {
             <Text style={progressSummaryStyles.tagValue}>1</Text>
           </View> */}
 
-            {tags.map((tag, index) => (
-              <View key={index} style={progressSummaryStyles.tagItem}>
-                <Text style={progressSummaryStyles.tagTitle}>{tag.title}</Text>
-                <Text style={progressSummaryStyles.tagValue}>{tag.value}</Text>
-              </View>
+              {tags.map((tag, index) => (
+                <View key={index} style={progressSummaryStyles.tagItem}>
+                  <Text style={progressSummaryStyles.tagTitle}>
+                    {tag.title}
+                  </Text>
+                  <Text style={progressSummaryStyles.tagValue}>
+                    {tag.value}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+          <View style={progressTabsStyles.container}>
+            {tabs.map((tab, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  progressTabsStyles.tabItem,
+                  selectedProgressTab === index && {
+                    backgroundColor: "#7A5AF8",
+                  },
+                ]}
+                onPress={() => {
+                  setSelectedProgressTab(index);
+                  // onTabPress(index);
+                }}
+              >
+                <Text
+                  style={[
+                    progressTabsStyles.tabTitle,
+                    selectedProgressTab === index && { color: "white" },
+                  ]}
+                >
+                  {tab.title}
+                </Text>
+              </TouchableOpacity>
             ))}
           </View>
+          <Tasks />
+          <Tasks />
+          <Tasks />
+          <Tasks />
+          <Tasks />
         </View>
-        <View style={progressTabs.container}>
-          {tabs.map((tab, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[
-                progressTabs.tabItem,
-                selectedProgressTab === index && { backgroundColor: "#7A5AF8" },
-              ]}
-              onPress={() => {
-                setSelectedProgressTab(index);
-                // onTabPress(index);
-              }}
-            >
-              <Text
-                style={[
-                  progressTabs.tabTitle,
-                  selectedProgressTab === index && { color: "white" },
-                ]}
-              >
-                {tab.title}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <Tasks />
-      </View>
-    </ScrollView>
+      </ScrollView>
+      <CreateTaskButton />
+    </View>
   );
 };
 
@@ -150,7 +164,7 @@ const progressSummaryStyles = StyleSheet.create({
   },
 });
 
-const progressTabs = StyleSheet.create({
+const progressTabsStyles = StyleSheet.create({
   container: {
     flexDirection: "row",
     gap: 4,
