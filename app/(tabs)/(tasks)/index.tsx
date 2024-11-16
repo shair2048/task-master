@@ -8,6 +8,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 
 interface Tag {
@@ -34,16 +35,17 @@ const TasksScreen = () => {
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={progressSummaryStyles.container}>
-        <Text style={progressSummaryStyles.textTitle}>
-          Summary of Your Work
-        </Text>
-        <Text style={progressSummaryStyles.textDescription}>
-          Your current task progress
-        </Text>
-        <View style={progressSummaryStyles.tagsStyles}>
-          {/* <View style={progressSummaryStyles.tagItem}>
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={progressSummaryStyles.container}>
+          <Text style={progressSummaryStyles.textTitle}>
+            Summary of Your Work
+          </Text>
+          <Text style={progressSummaryStyles.textDescription}>
+            Your current task progress
+          </Text>
+          <View style={progressSummaryStyles.tagsStyles}>
+            {/* <View style={progressSummaryStyles.tagItem}>
             <Text style={progressSummaryStyles.tagTitle}>To do</Text>
             <Text style={progressSummaryStyles.tagValue}>5</Text>
           </View>
@@ -56,40 +58,41 @@ const TasksScreen = () => {
             <Text style={progressSummaryStyles.tagValue}>1</Text>
           </View> */}
 
-          {tags.map((tag, index) => (
-            <View key={index} style={progressSummaryStyles.tagItem}>
-              <Text style={progressSummaryStyles.tagTitle}>{tag.title}</Text>
-              <Text style={progressSummaryStyles.tagValue}>{tag.value}</Text>
-            </View>
+            {tags.map((tag, index) => (
+              <View key={index} style={progressSummaryStyles.tagItem}>
+                <Text style={progressSummaryStyles.tagTitle}>{tag.title}</Text>
+                <Text style={progressSummaryStyles.tagValue}>{tag.value}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+        <View style={progressTabs.container}>
+          {tabs.map((tab, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                progressTabs.tabItem,
+                selectedProgressTab === index && { backgroundColor: "#7A5AF8" },
+              ]}
+              onPress={() => {
+                setSelectedProgressTab(index);
+                // onTabPress(index);
+              }}
+            >
+              <Text
+                style={[
+                  progressTabs.tabTitle,
+                  selectedProgressTab === index && { color: "white" },
+                ]}
+              >
+                {tab.title}
+              </Text>
+            </TouchableOpacity>
           ))}
         </View>
+        <Tasks />
       </View>
-      <View style={progressTabs.container}>
-        {tabs.map((tab, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              progressTabs.tabItem,
-              selectedProgressTab === index && { backgroundColor: "#7A5AF8" },
-            ]}
-            onPress={() => {
-              setSelectedProgressTab(index);
-              // onTabPress(index);
-            }}
-          >
-            <Text
-              style={[
-                progressTabs.tabTitle,
-                selectedProgressTab === index && { color: "white" },
-              ]}
-            >
-              {tab.title}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <Tasks />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -97,12 +100,9 @@ export default TasksScreen;
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
     flexDirection: "column",
-    // justifyContent: "center",
-    // alignItems: "center",
     gap: 16,
-    marginTop: 16,
+    marginVertical: 16,
     marginHorizontal: 12,
   },
 });

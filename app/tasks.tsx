@@ -49,6 +49,8 @@ const taskInfoStyles = StyleSheet.create({
   taskTag: {
     paddingVertical: 4,
     paddingHorizontal: 8,
+    fontSize: 12,
+    fontWeight: "500",
     borderRadius: 100,
     backgroundColor: "#EAECF0",
     color: "#475467",

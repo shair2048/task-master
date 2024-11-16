@@ -1,18 +1,27 @@
 import Tasks from "@/app/tasks";
 import { Link } from "expo-router";
-import { Image, StyleSheet, Platform, View, Text } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Platform,
+  View,
+  Text,
+  ScrollView,
+} from "react-native";
 
 const HomeScreen = () => {
   return (
-    <View style={styles.container}>
-      <View>
-        <Text style={textStyles.textTitle}>Today Tasks</Text>
-        <Text style={textStyles.textDescription}>
-          The tasks assigned to you for today
-        </Text>
+    <ScrollView>
+      <View style={styles.container}>
+        <View>
+          <Text style={textStyles.textTitle}>Today Tasks</Text>
+          <Text style={textStyles.textDescription}>
+            The tasks assigned to you for today
+          </Text>
+        </View>
+        <Tasks />
       </View>
-      <Tasks />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -23,7 +32,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     // height: 191,
     // alignItems: "center",
-    marginTop: 16,
+    marginVertical: 16,
     marginHorizontal: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
