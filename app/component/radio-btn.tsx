@@ -50,7 +50,7 @@ const radioBtnStyles = StyleSheet.create({
 
   radioGroup: {
     flexDirection: "row",
-    height: 56,
+    height: 44,
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 12,
@@ -61,5 +61,6 @@ const radioBtnStyles = StyleSheet.create({
   radioLabel: {
     fontSize: 14,
     fontWeight: "400",
+    color: "#2D2D2D",
   },
 });

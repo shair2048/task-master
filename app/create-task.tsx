@@ -21,13 +21,18 @@ const CreateTaskScreen = () => {
     <View style={styles.container}>
       <View>
         <Text style={styles.title}>Task Title</Text>
-        <TextInput style={styles.textInput} placeholder="Enter Task Title" />
+        <TextInput
+          style={styles.textInput}
+          placeholder="Enter Task Title"
+          placeholderTextColor="#98A2B3"
+        />
       </View>
       <View>
         <Text style={styles.title}>Task Description</Text>
         <TextInput
           style={[styles.textInput, { height: 100 }]}
           placeholder="Enter Task Description"
+          placeholderTextColor="#98A2B3"
           multiline={true}
           numberOfLines={5}
         />

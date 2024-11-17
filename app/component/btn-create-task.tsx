@@ -29,6 +29,8 @@ const btnCreateTaskStyles = StyleSheet.create({
     paddingHorizontal: 24,
     height: 76,
     backgroundColor: "white",
+    borderTopWidth: 1,
+    borderColor: "#EAECF0",
   },
   btnStyles: {
     flex: 1,

@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import {
   Image,
   TouchableOpacity,
@@ -12,6 +12,9 @@ import Notification from "../assets/images/notification-icon.svg";
 import DefaultAvatar from "../assets/images/default-avt.svg";
 import Message from "../assets/images/message-icon.svg";
 import { SafeAreaView } from "react-native-safe-area-context";
+import React from "react";
+import BackIcon from "../assets/images/back-icon.svg";
+import CustomHeader from "./component/custom-header";
 
 // const headerIconStyle = {
 //   marginHorizontal: 20,
@@ -31,21 +34,6 @@ export default function RootLayout() {
       <Stack.Screen
         name="(tabs)"
         options={{
-          // headerShown: false,
-          // headerTitle: "",
-          // headerLeft: () => (
-          // <TouchableOpacity onPress={() => {}} style={headerIconStyle}>
-          //   <Image
-          //     source={require("../assets/images/default-avt.png")}
-          //     style={{ width: 44, height: 44, borderRadius: 100 }}
-          //   />
-          // </TouchableOpacity>
-          // ),
-          // headerRight: () => (
-          // <TouchableOpacity onPress={() => {}} style={headerIconStyle}>
-          //   <Notification />
-          // </TouchableOpacity>
-          // ),
           header: (props) => (
             <SafeAreaView>
               <View style={[styles.header, styles.container]}>
@@ -79,7 +67,26 @@ export default function RootLayout() {
           ),
         }}
       />
-      {/* <Stack.Screen name="task-details" /> */}
+      <Stack.Screen
+        name="task-details"
+        options={{
+          header: () => (
+            <SafeAreaView>
+              <CustomHeader title="Task Detail" />
+            </SafeAreaView>
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="create-task"
+        options={{
+          header: () => (
+            <SafeAreaView>
+              <CustomHeader title="Create New Task" />
+            </SafeAreaView>
+          ),
+        }}
+      />
     </Stack>
   );
 }
@@ -109,8 +116,9 @@ const styles = StyleSheet.create({
     height: 80,
     backgroundColor: "white",
     paddingHorizontal: 20,
-    // paddingVertical: 16,
     justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderColor: "#EAECF0",
     // paddingTop:
     //   Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
