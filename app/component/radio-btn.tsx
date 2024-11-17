@@ -2,18 +2,18 @@ import { View, Text, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { RadioButton, TouchableRipple } from "react-native-paper";
 
-interface RadioLabel {
+interface RadioLabels {
   label: string;
 }
 
-const radioLabels: RadioLabel[] = [
-  { label: "Low" },
-  { label: "Medium" },
-  { label: "High" },
-];
+interface RadioBtnProps {
+  radioLabels: RadioLabels[];
+}
 
-const RadioBtn = () => {
-  const [selectedValue, setSelectedValue] = useState("option1");
+const RadioBtn = ({ radioLabels }: RadioBtnProps) => {
+  const [selectedValue, setSelectedValue] = useState(
+    radioLabels[0]?.label || ""
+  );
 
   return (
     <View style={radioBtnStyles.container}>
@@ -21,9 +21,8 @@ const RadioBtn = () => {
         <TouchableRipple
           key={index}
           onPress={() => setSelectedValue(radioLabel.label)}
-          style={radioBtnStyles.radioGroup}
         >
-          <View style={radioBtnStyles.radioBtn}>
+          <View style={radioBtnStyles.radioGroup}>
             <Text style={radioBtnStyles.radioLabel}>{radioLabel.label}</Text>
 
             <RadioButton
@@ -37,28 +36,6 @@ const RadioBtn = () => {
           </View>
         </TouchableRipple>
       ))}
-      {/* <TouchableRipple onPress={() => setSelectedValue("option2")}>
-        <View style={radioBtnStyles.radioBtn}>
-          <Text style={radioBtnStyles.radioLabel}>Medium</Text>
-
-          <RadioButton
-            value="option2"
-            status={selectedValue === "option2" ? "checked" : "unchecked"}
-            color="#7A5AF8"
-          />
-        </View>
-      </TouchableRipple>
-      <TouchableRipple onPress={() => setSelectedValue("option3")}>
-        <View style={radioBtnStyles.radioBtn}>
-          <Text style={radioBtnStyles.radioLabel}>High</Text>
-
-          <RadioButton
-            value="option3"
-            status={selectedValue === "option3" ? "checked" : "unchecked"}
-            color="#7A5AF8"
-          />
-        </View>
-      </TouchableRipple> */}
     </View>
   );
 };
@@ -70,11 +47,8 @@ const radioBtnStyles = StyleSheet.create({
     flexDirection: "column",
     gap: 8,
   },
+
   radioGroup: {
-    borderRadius: 8,
-    // backgroundColor: "red",
-  },
-  radioBtn: {
     flexDirection: "row",
     height: 56,
     justifyContent: "space-between",

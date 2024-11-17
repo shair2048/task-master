@@ -10,6 +10,12 @@ import CreateTaskButton from "./component/btn-create-task";
 import { RadioButton, TouchableRipple } from "react-native-paper";
 import RadioBtn from "./component/radio-btn";
 
+const taskPriorityLabels = [
+  { label: "Low" },
+  { label: "Medium" },
+  { label: "High" },
+];
+
 const CreateTaskScreen = () => {
   return (
     <View style={styles.container}>
@@ -28,7 +34,7 @@ const CreateTaskScreen = () => {
       </View>
       <View>
         <Text style={styles.title}>Assign To</Text>
-        <RadioBtn />
+        <RadioBtn radioLabels={taskPriorityLabels} />
       </View>
 
       {/* <CreateTaskButton /> */}
