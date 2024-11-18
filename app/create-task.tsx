@@ -6,9 +6,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
-import CreateTaskButton from "./component/btn-create-task";
+import CreateTaskButton from "../components/btn-create-task";
 import { RadioButton, TouchableRipple } from "react-native-paper";
-import RadioBtn from "./component/radio-btn";
+import RadioBtn from "../components/radio-btn";
 
 const taskPriorityLabels = [
   { label: "Low" },

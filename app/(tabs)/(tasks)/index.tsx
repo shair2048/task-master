@@ -1,4 +1,4 @@
-import CreateTaskButton from "@/app/component/btn-create-task";
+import CreateTaskButton from "@/components/btn-create-task";
 import Tasks from "@/app/tasks";
 import { Link } from "expo-router";
 import { useState } from "react";

@@ -14,7 +14,7 @@ import Message from "../assets/images/message-icon.svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
 import BackIcon from "../assets/images/back-icon.svg";
-import CustomHeader from "./component/custom-header";
+import CustomHeader from "../components/custom-header";
 
 // const headerIconStyle = {
 //   marginHorizontal: 20,

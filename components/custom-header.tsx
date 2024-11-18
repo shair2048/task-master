@@ -6,7 +6,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import React from "react";
-import BackIcon from "../../assets/images/back-icon.svg";
+import BackIcon from "../assets/images/back-icon.svg";
 import { router, useRouter } from "expo-router";
 
 interface CustomHeaderProps {
