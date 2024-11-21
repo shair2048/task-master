@@ -17,6 +17,8 @@ import {
 } from "react-native-paper";
 import RadioBtn from "../components/radio-btn";
 import ArrowDown from "../assets/images/arrow-down.svg";
+import { Picker } from "@react-native-picker/picker";
+import DropDownPicker from "react-native-dropdown-picker";
 
 interface BtnInfo {
   label: string;
@@ -26,7 +28,7 @@ interface BtnInfo {
 const btnInfos: BtnInfo[] = [
   { label: "Assign To", title: "Select Member" },
   { label: "Priority", title: "Select Priority" },
-  { label: "Difficulty", title: "Select Difficulty" },
+  { label: "Deadline", title: "Select Deadline" },
 ];
 
 const taskPriorityLabels = [
@@ -37,96 +39,120 @@ const taskPriorityLabels = [
 
 const CreateTaskScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(null);
+  const [items, setItems] = useState([
+    { label: "English", value: "en" },
+    { label: "Deutsch", value: "de" },
+    { label: "French", value: "fr" },
+  ]);
+  const [openPriority, setOpenPriority] = useState(false);
+  const [valuePriority, setValuePriority] = useState(null);
+  const [itemsPriority, setItemsPriority] = useState([
+    { label: "Low", value: "low" },
+    { label: "Medium", value: "medium" },
+    { label: "High", value: "high" },
+  ]);
+  const [openDeadline, setOpenDeadline] = useState(false);
+  const [valueDeadline, setValueDeadline] = useState(null);
+  const [itemsDeadline, setItemsDeadline] = useState([
+    { label: "Low", value: "low" },
+    { label: "Medium", value: "medium" },
+    { label: "High", value: "high" },
+  ]);
 
   const showModal = () => setModalVisible(true);
   const hideModal = () => setModalVisible(false);
 
   return (
-    <Provider>
-      <ScrollView>
-        <View style={styles.container}>
-          <View>
-            <Text style={styles.title}>Task Title</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter Task Title"
-              placeholderTextColor="#98A2B3"
-            />
+    // <ScrollView>
+    <View style={styles.container}>
+      <View>
+        <Text style={styles.title}>Task Title</Text>
+        <TextInput
+          style={styles.textInput}
+          placeholder="Enter Task Title"
+          placeholderTextColor="#98A2B3"
+        />
+      </View>
+      <View>
+        <Text style={styles.title}>Task Description</Text>
+        <TextInput
+          style={[styles.textInput, { height: 100 }]}
+          placeholder="Enter Task Description"
+          placeholderTextColor="#98A2B3"
+          multiline={true}
+          numberOfLines={5}
+        />
+      </View>
+
+      {/* {btnInfos.map((btnInfo, index) => (
+          <View key={index}>
+            <Text style={styles.title}>{btnInfo.label}</Text>
+            <TouchableOpacity onPress={showModal} style={btnStyles.container}>
+              <Text style={btnStyles.btnTitle}>{btnInfo.title}</Text>
+              <ArrowDown />
+            </TouchableOpacity>
           </View>
-          <View>
-            <Text style={styles.title}>Task Description</Text>
-            <TextInput
-              style={[styles.textInput, { height: 100 }]}
-              placeholder="Enter Task Description"
-              placeholderTextColor="#98A2B3"
-              multiline={true}
-              numberOfLines={5}
-            />
-          </View>
-          {/* <View>
+        ))} */}
+      <View style={{ zIndex: 2 }}>
         <Text style={styles.title}>Assign To</Text>
-        <RadioBtn radioLabels={taskPriorityLabels} />
-        <TouchableOpacity style={btnStyles.container}>
-          <Text style={btnStyles.btnTitle}>Select Member</Text>
-          <ArrowDown />
-        </TouchableOpacity>
-      </View> */}
-          {btnInfos.map((btnInfo, index) => (
-            <View key={index}>
-              <Text style={styles.title}>{btnInfo.label}</Text>
-              <TouchableOpacity onPress={showModal} style={btnStyles.container}>
-                <Text style={btnStyles.btnTitle}>{btnInfo.title}</Text>
-                <ArrowDown />
-              </TouchableOpacity>
-            </View>
-          ))}
-          <Portal>
-            <Modal
-              // animationType="slide"
-              // transparent={true}
-              // backdropOpacity={0.5}
-              // visible={modalVisible}
-              // onRequestClose={() => setModalVisible(false)}
 
-              visible={modalVisible}
-              onDismiss={hideModal}
-              contentContainerStyle={modalStyles.container}
-            >
-              {/* <View style={modalStyles.container}> */}
-              <RadioBtn radioLabels={taskPriorityLabels} />
+        <DropDownPicker
+          open={open}
+          value={value}
+          items={items}
+          setOpen={setOpen}
+          setValue={setValue}
+          setItems={setItems}
+          placeholder="Select Member"
+          style={btnStyles.container}
+          dropDownDirection="BOTTOM"
+        />
+      </View>
+      <View style={{ zIndex: 1 }}>
+        <Text style={styles.title}>Priority</Text>
 
-              <View style={modalStyles.btnModalStyles}>
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  style={[
-                    modalStyles.btnModalItem,
-                    { borderColor: "#6938EF", borderWidth: 1 },
-                  ]}
-                >
-                  <Text style={[modalStyles.textStyles, { color: "#6938EF" }]}>
-                    Close
-                  </Text>
-                </TouchableOpacity>
+        <DropDownPicker
+          open={openPriority}
+          value={valuePriority}
+          items={itemsPriority}
+          setOpen={setOpenPriority}
+          setValue={setValuePriority}
+          setItems={setItemsPriority}
+          placeholder="Select Priority"
+          style={btnStyles.container}
+          dropDownDirection="BOTTOM"
+        />
+      </View>
+      <View style={{ zIndex: 0 }}>
+        <Text style={styles.title}>Difficulty</Text>
 
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  style={[
-                    modalStyles.btnModalItem,
-                    { backgroundColor: "#6938EF" },
-                  ]}
-                >
-                  <Text style={[modalStyles.textStyles, { color: "white" }]}>
-                    Save
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              {/* </View> */}
-            </Modal>
-          </Portal>
-        </View>
-      </ScrollView>
-      <CreateTaskButton />
-    </Provider>
+        <DropDownPicker
+          open={openDeadline}
+          value={valueDeadline}
+          items={itemsDeadline}
+          setOpen={setOpenDeadline}
+          setValue={setValueDeadline}
+          setItems={setItemsDeadline}
+          placeholder="Select Deadline"
+          style={btnStyles.container}
+          dropDownDirection="BOTTOM"
+        />
+      </View>
+
+      {/* <Picker
+          selectedValue={selectedLanguage}
+          onValueChange={(itemValue, itemIndex) =>
+            setSelectedLanguage(itemValue)
+          }
+        >
+          <Picker.Item label="Java" value="java" />
+          <Picker.Item label="JavaScript" value="js" />
+        </Picker> */}
+      {/* <CreateTaskButton /> */}
+    </View>
+    // </ScrollView>
   );
 };
 
