@@ -1,4 +1,4 @@
-import { router, Stack } from "expo-router";
+import { router, Stack, useRouter } from "expo-router";
 import {
   Image,
   TouchableOpacity,
@@ -12,7 +12,7 @@ import Notification from "../assets/images/notification-icon.svg";
 import DefaultAvatar from "../assets/images/default-avt.svg";
 import Message from "../assets/images/message-icon.svg";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React from "react";
+import React, { useEffect } from "react";
 import BackIcon from "../assets/images/back-icon.svg";
 import CustomHeader from "../components/custom-header";
 
@@ -28,9 +28,23 @@ import CustomHeader from "../components/custom-header";
 //   },
 // });
 
+// const isLoggedIn = true;
+
 export default function RootLayout() {
+  // const router = useRouter();
+
+  // useEffect(() => {
+  //   if (!isLoggedIn) {
+  //     router.push("/sign-in");
+  //   } else {
+  //     router.push("/(tabs)");
+  //   }
+  // }, [isLoggedIn]);
+
   return (
     <Stack>
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      {/* <Stack.Screen name="(admin)" options={{ headerShown: false }} /> */}
       <Stack.Screen
         name="(tabs)"
         options={{
