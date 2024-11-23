@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Button,
 } from "react-native";
 import React, { useState } from "react";
 import CreateTaskButton from "../components/btn-create-task";
@@ -19,6 +20,9 @@ import RadioBtn from "../components/radio-btn";
 import ArrowDown from "../assets/images/arrow-down.svg";
 import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 
 interface BtnInfo {
   label: string;
@@ -38,7 +42,7 @@ const taskPriorityLabels = [
 ];
 
 const CreateTaskScreen = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+  // const [modalVisible, setModalVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
@@ -53,16 +57,42 @@ const CreateTaskScreen = () => {
     { label: "Medium", value: "medium" },
     { label: "High", value: "high" },
   ]);
-  const [openDeadline, setOpenDeadline] = useState(false);
-  const [valueDeadline, setValueDeadline] = useState(null);
-  const [itemsDeadline, setItemsDeadline] = useState([
-    { label: "Low", value: "low" },
-    { label: "Medium", value: "medium" },
-    { label: "High", value: "high" },
-  ]);
 
-  const showModal = () => setModalVisible(true);
-  const hideModal = () => setModalVisible(false);
+  // const showModal = () => setModalVisible(true);
+  // const hideModal = () => setModalVisible(false);
+
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
+  const [mode, setMode] = useState<"date" | "time">("date");
+  const [isDateSelected, setIsDateSelected] = useState(false);
+  const [isTimeSelected, setIsTimeSelected] = useState(false);
+
+  const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    setShow(false);
+    if (selectedDate) {
+      setDate(selectedDate);
+      if (mode === "date") {
+        setIsDateSelected(true);
+      }
+
+      if (mode === "time") {
+        setIsTimeSelected(true);
+      }
+    }
+  };
+
+  const showDatePicker = () => {
+    setMode("date");
+    setShow(true);
+  };
+
+  const showTimePicker = () => {
+    setMode("time");
+    setShow(true);
+  };
+
+  const dateString = date.toLocaleDateString();
+  const timeString = date.toLocaleTimeString();
 
   return (
     // <ScrollView>
@@ -126,21 +156,34 @@ const CreateTaskScreen = () => {
         />
       </View>
       <View style={{ zIndex: 0 }}>
-        <Text style={styles.title}>Difficulty</Text>
+        <Text style={styles.title}>Select Deadline Date</Text>
 
-        <DropDownPicker
-          open={openDeadline}
-          value={valueDeadline}
-          items={itemsDeadline}
-          setOpen={setOpenDeadline}
-          setValue={setValueDeadline}
-          setItems={setItemsDeadline}
-          placeholder="Select Deadline"
-          style={btnStyles.container}
-          dropDownDirection="BOTTOM"
-        />
+        <TouchableOpacity onPress={showDatePicker} style={btnStyles.container}>
+          <Text style={btnStyles.btnTitle}>
+            {!isDateSelected ? "Select Date" : dateString}
+          </Text>
+        </TouchableOpacity>
       </View>
 
+      <View style={{ zIndex: 0 }}>
+        <Text style={styles.title}>Select Deadline Time</Text>
+
+        <TouchableOpacity onPress={showTimePicker} style={btnStyles.container}>
+          <Text style={btnStyles.btnTitle}>
+            {!isTimeSelected ? "Select Time" : timeString}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {show && (
+        <DateTimePicker
+          value={date}
+          mode={mode}
+          is24Hour={true}
+          // display={Platform.OS === "ios" ? "spinner" : "default"} // Spinner cho iOS
+          onChange={onChange}
+        />
+      )}
       {/* <Picker
           selectedValue={selectedLanguage}
           onValueChange={(itemValue, itemIndex) =>
