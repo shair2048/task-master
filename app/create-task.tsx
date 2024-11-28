@@ -18,7 +18,7 @@ import {
 } from "react-native-paper";
 import RadioBtn from "../components/radio-btn";
 import ArrowDown from "../assets/images/arrow-down.svg";
-import { Picker } from "@react-native-picker/picker";
+// import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import DateTimePicker, {
   DateTimePickerEvent,
