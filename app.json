@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/task-master-logo.png",
         "backgroundColor": "#7544FC"
-      }
+      },
+      "package": "com.hteam.taskmaster"
     },
     "web": {
       "bundler": "metro",
