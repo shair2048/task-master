@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import React from "react";
 import { Link } from "expo-router";
+import BtnAuth from "@/components/btn-auth";
 
 interface FieldLabel {
   label: string;
@@ -39,10 +40,7 @@ const SignInScreen = () => {
       <Text style={screenStyles.forgotPassword}>
         <Link href="/sign-up">Forgot Password</Link>
       </Text>
-
-      <TouchableOpacity style={screenStyles.btnStyles}>
-        <Text style={screenStyles.btnLabel}>Sign In</Text>
-      </TouchableOpacity>
+      <BtnAuth label="Sign In" />
       <Text style={screenStyles.linkToSignUp}>
         Don’t have an account?
         <Link href="/sign-up" style={{ color: "#6938EF" }}>
@@ -82,18 +80,7 @@ const screenStyles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 12,
   },
-  btnStyles: {
-    alignItems: "center",
-    justifyContent: "center",
-    height: 48,
-    backgroundColor: "#8862F2",
-    borderRadius: 100,
-  },
-  btnLabel: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#FFFFFF",
-  },
+
   forgotPassword: {
     fontSize: 12,
     fontWeight: "400",
