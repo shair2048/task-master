@@ -28,18 +28,16 @@ import CustomHeader from "../components/custom-header";
 //   },
 // });
 
-// const isLoggedIn = true;
+const isLoggedIn = false;
 
 export default function RootLayout() {
-  // const router = useRouter();
+  const router = useRouter();
 
-  // useEffect(() => {
-  //   if (!isLoggedIn) {
-  //     router.push("/sign-in");
-  //   } else {
-  //     router.push("/(tabs)");
-  //   }
-  // }, [isLoggedIn]);
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push("/sign-in");
+    }
+  }, [isLoggedIn]);
 
   return (
     <Stack>
