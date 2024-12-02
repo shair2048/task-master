@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TextInput } from "react-native";
 import React from "react";
 import BtnAuth from "@/components/btn-auth";
 import { Link } from "expo-router";
+import TxtField from "@/components/txt-field";
 
 interface FieldLabel {
   label: string;
@@ -18,21 +19,8 @@ const SignUpScreen = () => {
   return (
     <View style={screenStyles.container}>
       <Text style={screenStyles.screenTitle}>Sign Up</Text>
-      {/* <View style={{ gap: 4 }}>
-        <Text style={screenStyles.fieldLabel}>Email</Text>
-        <TextInput style={screenStyles.fieldInput} placeholder="My Email" />
-      </View> */}
-      {fieldLabels.map((fieldLabel, index) => (
-        <View key={index} style={{ gap: 4 }}>
-          <Text style={screenStyles.fieldLabel}>{fieldLabel.label}</Text>
-          <TextInput
-            style={screenStyles.fieldInput}
-            placeholder={fieldLabel.value}
-            placeholderTextColor="#98A2B3"
-          />
-        </View>
-      ))}
 
+      <TxtField fieldLabels={fieldLabels} />
       <BtnAuth label="Sign Up" />
       <Text style={screenStyles.linkToSignUp}>
         Already have an account?
@@ -60,18 +48,6 @@ const screenStyles = StyleSheet.create({
     fontWeight: "600",
     color: "#101828",
     textAlign: "center",
-  },
-  fieldLabel: {
-    fontSize: 12,
-    fontWeight: "400",
-    color: "#475467",
-  },
-  fieldInput: {
-    height: 44,
-    borderRadius: 8,
-    borderColor: "#98A2B3",
-    borderWidth: 1,
-    paddingHorizontal: 12,
   },
 
   forgotPassword: {
