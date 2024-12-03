@@ -28,7 +28,7 @@ import CustomHeader from "../components/custom-header";
 //   },
 // });
 
-// const isLoggedIn = true;
+const isLoggedIn = false;
 
 export default function RootLayout() {
   // const router = useRouter();
@@ -36,8 +36,6 @@ export default function RootLayout() {
   // useEffect(() => {
   //   if (!isLoggedIn) {
   //     router.push("/sign-in");
-  //   } else {
-  //     router.push("/(tabs)");
   //   }
   // }, [isLoggedIn]);
 
