@@ -1,4 +1,4 @@
-import { router, Stack, useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import {
   Image,
   TouchableOpacity,
@@ -31,13 +31,17 @@ import CustomHeader from "../components/custom-header";
 const isLoggedIn = false;
 
 export default function RootLayout() {
-  // const router = useRouter();
+  const router = useRouter();
 
   // useEffect(() => {
   //   if (!isLoggedIn) {
   //     router.push("/sign-in");
   //   }
   // }, [isLoggedIn]);
+
+  const profileHandlePress = () => {
+    router.push("/profile");
+  };
 
   return (
     <Stack>
@@ -49,7 +53,10 @@ export default function RootLayout() {
           header: (props) => (
             <SafeAreaView>
               <View style={[styles.header, styles.container]}>
-                <TouchableOpacity onPress={() => {}} style={styles.container}>
+                <TouchableOpacity
+                  onPress={profileHandlePress}
+                  style={styles.container}
+                >
                   {/* <Image
                     source={require("../assets/images/default-avt.png")}
                     style={{ width: 44, height: 44, borderRadius: 100 }}
@@ -95,6 +102,16 @@ export default function RootLayout() {
           header: () => (
             <SafeAreaView>
               <CustomHeader title="Create New Task" />
+            </SafeAreaView>
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="profile"
+        options={{
+          header: () => (
+            <SafeAreaView>
+              <CustomHeader title="My Profile" />
             </SafeAreaView>
           ),
         }}
