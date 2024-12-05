@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Image, StyleSheet, Platform, View, Text } from "react-native";
 
-const ProfileScreen = () => {
+const TeamsScreen = () => {
   return (
     <View style={styles.container}>
       <Text>Teams</Text>
@@ -9,7 +9,7 @@ const ProfileScreen = () => {
   );
 };
 
-export default ProfileScreen;
+export default TeamsScreen;
 
 const styles = StyleSheet.create({
   container: {
