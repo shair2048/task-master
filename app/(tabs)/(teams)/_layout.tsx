@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-const TeamsLayout = () => {
+const ProfileLayout = () => {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }}/>
@@ -8,4 +8,4 @@ const TeamsLayout = () => {
   )
 }
 
-export default TeamsLayout;
+export default ProfileLayout;
