@@ -34,6 +34,14 @@ const ProfileScreen = () => {
           <ProfileItems value="******" onChangePress={() => {}} />
         </View>
       </View>
+      <View style={{ gap: 8 }}>
+        <Text style={profileScreenStyles.infoTitle}>SETTING</Text>
+        <View style={profileScreenStyles.accountInfo}>
+          <TouchableOpacity>
+            <Text style={profileScreenStyles.item}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
@@ -75,10 +83,10 @@ const profileScreenStyles = StyleSheet.create({
     gap: 12,
     borderRadius: 12,
   },
-  //   infoItem: {
-  //     fontSize: 11,
-  //     fontWeight: "500",
-  //   },
+  item: {
+    fontSize: 13,
+    fontWeight: "500",
+  },
 
   infoTitle: {
     fontSize: 13,
