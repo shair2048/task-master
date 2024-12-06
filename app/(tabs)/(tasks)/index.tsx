@@ -1,6 +1,6 @@
 import CreateTaskButton from "@/components/btn-create-task";
 import Tasks from "@/app/tasks";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Image,
@@ -35,6 +35,12 @@ const TasksScreen = () => {
     { title: "Finish" },
   ];
 
+  const router = useRouter();
+
+  const handlePress = () => {
+    router.push("/create-task");
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollView>
@@ -47,19 +53,6 @@ const TasksScreen = () => {
               Your current task progress
             </Text>
             <View style={progressSummaryStyles.tagsStyles}>
-              {/* <View style={progressSummaryStyles.tagItem}>
-            <Text style={progressSummaryStyles.tagTitle}>To do</Text>
-            <Text style={progressSummaryStyles.tagValue}>5</Text>
-          </View>
-          <View style={progressSummaryStyles.tagItem}>
-            <Text style={progressSummaryStyles.tagTitle}>In progress</Text>
-            <Text style={progressSummaryStyles.tagValue}>2</Text>
-          </View>
-          <View style={progressSummaryStyles.tagItem}>
-            <Text style={progressSummaryStyles.tagTitle}>Done</Text>
-            <Text style={progressSummaryStyles.tagValue}>1</Text>
-          </View> */}
-
               {tags.map((tag, index) => (
                 <View key={index} style={progressSummaryStyles.tagItem}>
                   <Text style={progressSummaryStyles.tagTitle}>
@@ -105,7 +98,7 @@ const TasksScreen = () => {
           <Tasks />
         </View>
       </ScrollView>
-      <CreateTaskButton />
+      <CreateTaskButton label="New Task" onChangePress={handlePress} />
     </View>
   );
 };
