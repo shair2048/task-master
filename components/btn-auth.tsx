@@ -3,11 +3,12 @@ import React from "react";
 
 interface BtnAuthProps {
   label: string;
+  onChangePress: () => void;
 }
 
-const BtnAuth = ({ label }: BtnAuthProps) => {
+const BtnAuth = ({ label, onChangePress }: BtnAuthProps) => {
   return (
-    <TouchableOpacity style={btnStyles.container}>
+    <TouchableOpacity onPress={onChangePress} style={btnStyles.container}>
       <Text style={btnStyles.btnLabel}>{label}</Text>
     </TouchableOpacity>
   );

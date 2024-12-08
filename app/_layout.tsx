@@ -33,11 +33,11 @@ const isLoggedIn = false;
 export default function RootLayout() {
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (!isLoggedIn) {
-  //     router.push("/sign-in");
-  //   }
-  // }, [isLoggedIn]);
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push("/sign-in");
+    }
+  }, [isLoggedIn]);
 
   const profileHandlePress = () => {
     router.push("/profile");

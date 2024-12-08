@@ -10,26 +10,31 @@ import { Link } from "expo-router";
 import BtnAuth from "@/components/btn-auth";
 import TxtField from "@/components/txt-field";
 
-interface FieldLabels {
-  label: string;
-  value: string;
-}
+// interface FieldLabels {
+//   label: string;
+//   value: string;
+// }
 
-const fieldLabels: FieldLabels[] = [
-  { label: "Email", value: "My Email" },
-  { label: "Password", value: "My Password" },
-];
+// const fieldLabels: FieldLabels[] = [
+//   { label: "Email", value: "My Email" },
+//   { label: "Password", value: "My Password" },
+// ];
 
 const SignInScreen = () => {
   return (
     <View style={screenStyles.container}>
       <Text style={screenStyles.screenTitle}>Sign In</Text>
 
-      <TxtField fieldLabels={fieldLabels} />
+      <TxtField
+        label="Email"
+        placeholderValue="My Email"
+        onChangeText={(text: string) => {}}
+        secureText={false}
+      />
       <Text style={screenStyles.forgotPassword}>
         <Link href="/sign-up">Forgot Password</Link>
       </Text>
-      <BtnAuth label="Sign In" />
+      <BtnAuth label="Sign In" onChangePress={() => {}} />
       <Text style={screenStyles.linkToSignUp}>
         Don’t have an account?
         <Link href="/sign-up" style={{ color: "#6938EF" }}>
