@@ -36,12 +36,11 @@ const SignUpScreen = () => {
     }
 
     try {
-      const response = await api.post("/register", {
+      await api.post("/register", {
         username,
         email,
         password,
       });
-      setMessage(response.data.message);
       setError("");
       router.push("/sign-in");
     } catch (err) {
