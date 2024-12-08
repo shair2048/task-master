@@ -5,10 +5,11 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
-import { Link } from "expo-router";
+import React, { useState } from "react";
+import { Link, useRouter } from "expo-router";
 import BtnAuth from "@/components/btn-auth";
 import TxtField from "@/components/txt-field";
+import api from "../../api";
 
 // interface FieldLabels {
 //   label: string;
@@ -21,6 +22,36 @@ import TxtField from "@/components/txt-field";
 // ];
 
 const SignInScreen = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    // if (password !== confirmPassword) {
+    //   setMessage("Passwords do not match");
+    //   setPassword("");
+    //   setConfirmPassword("");
+    //   return;
+    // }
+
+    try {
+      const response = await api.post("/register", {
+        email,
+        password,
+      });
+      setMessage(response.data.message);
+      setError("");
+
+      router.push("/sign-in");
+    } catch (err) {
+      setError("Registration failed");
+      setMessage("");
+    }
+  };
+
   return (
     <View style={screenStyles.container}>
       <Text style={screenStyles.screenTitle}>Sign In</Text>
@@ -28,8 +59,16 @@ const SignInScreen = () => {
       <TxtField
         label="Email"
         placeholderValue="My Email"
-        onChangeText={(text: string) => {}}
+        value={email}
+        onChangeText={setEmail}
         secureText={false}
+      />
+      <TxtField
+        label="Password"
+        placeholderValue="My Password"
+        value={password}
+        onChangeText={setPassword}
+        secureText={true}
       />
       <Text style={screenStyles.forgotPassword}>
         <Link href="/sign-up">Forgot Password</Link>

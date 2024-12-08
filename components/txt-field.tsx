@@ -12,6 +12,7 @@ import React from "react";
 
 interface FieldLabelProps {
   label: string;
+  value: string;
   secureText: boolean;
   placeholderValue: string;
   onChangeText: (text: string) => void;
@@ -24,6 +25,7 @@ interface FieldLabelProps {
 
 const TxtField = ({
   label,
+  value,
   placeholderValue,
   secureText,
   onChangeText,
@@ -44,6 +46,7 @@ const TxtField = ({
         <Text style={txtFieldStyles.fieldLabel}>{label}</Text>
         <TextInput
           style={txtFieldStyles.fieldInput}
+          value={value}
           placeholder={placeholderValue}
           placeholderTextColor="#98A2B3"
           onChangeText={onChangeText}

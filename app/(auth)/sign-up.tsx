@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import React, { useState } from "react";
 import BtnAuth from "@/components/btn-auth";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import TxtField from "@/components/txt-field";
 import api from "../../api";
 
@@ -17,20 +17,33 @@ import api from "../../api";
 // ];
 
 const SignUpScreen = () => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+  const router = useRouter();
+
   const handleRegister = async () => {
-    try {
-      const response = await api.post("/register", { email, password });
-      setMessage(response.data.message);
-      setError("");
-      setEmail("");
+    if (password !== confirmPassword) {
+      setMessage("Passwords do not match");
+      // setEmail("");
       setPassword("");
       setConfirmPassword("");
+      return;
+    }
+
+    try {
+      const response = await api.post("/register", {
+        username,
+        email,
+        password,
+      });
+      setMessage(response.data.message);
+      setError("");
+      router.push("/sign-in");
     } catch (err) {
       setError("Registration failed");
       setMessage("");
@@ -42,26 +55,37 @@ const SignUpScreen = () => {
       <Text style={screenStyles.screenTitle}>Sign Up</Text>
 
       <TxtField
+        label="Username"
+        placeholderValue="My username"
+        value={username}
+        onChangeText={setUsername}
+        secureText={false}
+      />
+      <TxtField
         label="Email"
         placeholderValue="My Email"
+        value={email}
         onChangeText={setEmail}
         secureText={false}
       />
       <TxtField
         label="Password"
         placeholderValue="My Password"
+        value={password}
         onChangeText={setPassword}
         secureText={true}
       />
       <TxtField
         label="Confirm Password"
         placeholderValue="Confirm My Password"
+        value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureText={true}
       />
+      {/* {error ? <Text style={styles.error}>{error}</Text> : null} */}
+      {message ? <Text style={screenStyles.txtMessage}>{message}</Text> : null}
       <BtnAuth label="Sign Up" onChangePress={handleRegister} />
-      {/* {error ? <Text style={styles.error}>{error}</Text> : null}
-      {message ? <Text style={styles.success}>{message}</Text> : null} */}
+
       <Text style={screenStyles.linkToSignUp}>
         Already have an account?
         <Link href="/sign-in" style={{ color: "#6938EF" }}>
@@ -101,5 +125,10 @@ const screenStyles = StyleSheet.create({
     fontWeight: "500",
     color: "#263238",
     textAlign: "center",
+  },
+  txtMessage: {
+    fontSize: 12,
+    fontWeight: "400",
+    color: "#F95555",
   },
 });
