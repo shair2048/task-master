@@ -29,7 +29,6 @@ const SignUpScreen = () => {
   const handleRegister = async () => {
     if (password !== confirmPassword) {
       setMessage("Passwords do not match");
-      // setEmail("");
       setPassword("");
       setConfirmPassword("");
       return;
@@ -41,11 +40,10 @@ const SignUpScreen = () => {
         email,
         password,
       });
-      setError("");
+
       router.push("/sign-in");
     } catch (err) {
       setError("Registration failed");
-      setMessage("");
     }
   };
 

@@ -30,25 +30,26 @@ const SignInScreen = () => {
   const router = useRouter();
 
   const handleLogin = async () => {
-    // if (password !== confirmPassword) {
-    //   setMessage("Passwords do not match");
-    //   setPassword("");
-    //   setConfirmPassword("");
-    //   return;
-    // }
+    if (!email || !password) {
+      setMessage("Please enter all fields");
+      return;
+    }
 
     try {
-      const response = await api.post("/register", {
+      await api.post("/login", {
         email,
         password,
       });
-      setMessage(response.data.message);
-      setError("");
+      // const token = response.data.token;
 
-      router.push("/sign-in");
+      // if (!token) {
+      //   setError("Login failed: No token received");
+      //   return;
+      // }
+
+      router.push("/(tabs)");
     } catch (err) {
-      setError("Registration failed");
-      setMessage("");
+      setError("Login failed");
     }
   };
 
@@ -70,10 +71,14 @@ const SignInScreen = () => {
         onChangeText={setPassword}
         secureText={true}
       />
+
+      {error ? <Text style={screenStyles.txtMessage}>{error}</Text> : null}
+      {message ? <Text style={screenStyles.txtMessage}>{message}</Text> : null}
+
       <Text style={screenStyles.forgotPassword}>
         <Link href="/sign-up">Forgot Password</Link>
       </Text>
-      <BtnAuth label="Sign In" onChangePress={() => {}} />
+      <BtnAuth label="Sign In" onChangePress={handleLogin} />
       <Text style={screenStyles.linkToSignUp}>
         Don’t have an account?
         <Link href="/sign-up" style={{ color: "#6938EF" }}>
@@ -113,5 +118,10 @@ const screenStyles = StyleSheet.create({
     fontWeight: "500",
     color: "#263238",
     textAlign: "center",
+  },
+  txtMessage: {
+    fontSize: 12,
+    fontWeight: "400",
+    color: "#F95555",
   },
 });
