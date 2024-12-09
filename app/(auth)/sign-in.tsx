@@ -48,7 +48,7 @@ const SignInScreen = () => {
         return;
       }
 
-      // await AsyncStorage.setItem("key", "jodjoijboajobj");
+      await AsyncStorage.setItem("authToken", token);
 
       router.push("/(tabs)");
     } catch (err) {

@@ -16,6 +16,7 @@ import React, { useEffect, useState } from "react";
 import BackIcon from "../assets/images/back-icon.svg";
 import CustomHeader from "../components/custom-header";
 import api from "../api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // const headerIconStyle = {
 //   marginHorizontal: 20,
@@ -36,11 +37,24 @@ export default function RootLayout() {
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
 
+  // useEffect(() => {
+  //   if (!isLoggedIn) {
+  //     router.push("/sign-in");
+  //   }
+  // }, [isLoggedIn]);
+
   useEffect(() => {
-    if (!isLoggedIn) {
-      router.push("/sign-in");
-    }
-  }, [isLoggedIn]);
+    const checkAuthStatus = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (token) {
+        router.push("/(tabs)");
+      } else {
+        router.push("/sign-in");
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
 
   const profileHandlePress = () => {
     router.push("/profile");
