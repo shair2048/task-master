@@ -52,23 +52,49 @@ const SignInScreen = () => {
         return;
       }
 
-      if (Platform.OS === "web" && role === "Admin") {
-        router.push("/(admin)");
-        return;
-      }
+      // if (Platform.OS === "web" && role === "Admin") {
+      //   router.push("/(admin)");
+      //   return;
+      // }
 
-      if (Platform.OS === "android") {
-        await AsyncStorage.setItem("authToken", token);
-        await AsyncStorage.setItem("userId", uid);
+      // if (Platform.OS === "android") {
+      //   if (role === "Admin") {
+      //     setError("Admin accounts are not allowed to log in on the app.");
+      //     return;
+      //   }
 
-        router.push("/(tabs)");
+      //   await AsyncStorage.setItem("authToken", token);
+      //   await AsyncStorage.setItem("userId", uid);
+
+      //   router.push("/(tabs)");
+      // }
+
+      switch (Platform.OS) {
+        case "web":
+          if (role === "Individual") {
+            setMessage("Login failed");
+            return;
+          }
+          router.push("/(admin)");
+          break;
+
+        case "android":
+          if (role === "Admin") {
+            setMessage("Login failed");
+            return;
+          }
+          await AsyncStorage.setItem("authToken", token);
+          await AsyncStorage.setItem("userId", uid);
+          router.push("/(tabs)");
+          break;
+
+        default:
+          break;
       }
     } catch (err) {
       setError("Login failed");
     }
   };
-
-  // storeData();
 
   return (
     <View style={screenStyles.container}>
