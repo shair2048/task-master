@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View, FlatList, ScrollView, useWindowDimensions, TouchableOpacity } from "react-native";
 import { Link, useRouter } from 'expo-router';
 
-const projects = [
+const teams = [
   {
     id: "1",
-    name: "First Project",
+    name: "First team",
     progress: 33,
     members: 3,
     tasks: 3,
@@ -15,7 +15,7 @@ const projects = [
   },
   {
     id: "2",
-    name: "Second Project",
+    name: "Second team",
     progress: 75,
     members: 3,
     tasks: 10,
@@ -24,7 +24,7 @@ const projects = [
   },
   {
     id: "3",
-    name: "Third Project",
+    name: "Third team",
     progress: 50,
     members: 7,
     tasks: 5,
@@ -33,7 +33,7 @@ const projects = [
   },
   {
     id: "4",
-    name: "Fourth Project",
+    name: "Fourth team",
     progress: 20,
     members: 4,
     tasks: 6,
@@ -42,7 +42,7 @@ const projects = [
   },
 ];
 
-interface Project {
+interface Team {
   id: string;
   name: string;
   progress: number;
@@ -52,32 +52,32 @@ interface Project {
   endDate: string;
 }
 
-const ProjectRow = ({ project }: { project: Project }) => {
+const TeamRow = ({ team }: { team: Team }) => {
   const router = useRouter(); // Khởi tạo useRouter
 
   const handleEdit = () => {
-    router.push(`/create-project`); 
+    router.push(`/create-team`); 
   };
 
   const handleDelete = () => {
-    console.log(`Delete project ${project.name}`);
+    console.log(`Delete team ${team.name}`);
   };
 
   const handleNavigateToDetail = () => {
     // Điều hướng tới trang chi tiết dự án
-    router.push(`/(project-detail)/${project.id}` as any);
+    router.push(`/(team-detail)/${team.id}` as any);
   };
 
   return (
     <View style={styles.row}>
       <TouchableOpacity style={styles.cell} onPress={handleNavigateToDetail}>
-        <Text style={styles.cell}>{project.name}</Text>
+        <Text style={styles.cell}>{team.name}</Text>
       </TouchableOpacity>
-      <Text style={styles.cell}>{project.progress}%</Text>
-      <Text style={styles.cell}>{project.members}</Text>
-      <Text style={styles.cell}>{project.tasks}</Text>
-      <Text style={styles.cell}>{project.startDate}</Text>
-      <Text style={styles.cell}>{project.endDate}</Text>
+      <Text style={styles.cell}>{team.progress}%</Text>
+      <Text style={styles.cell}>{team.members}</Text>
+      <Text style={styles.cell}>{team.tasks}</Text>
+      <Text style={styles.cell}>{team.startDate}</Text>
+      <Text style={styles.cell}>{team.endDate}</Text>
       <View style={styles.cell}>
         <ActionButtons onEdit={handleEdit} onDelete={handleDelete} />
       </View>
@@ -96,7 +96,7 @@ const App = () => {
         <View style={styles.table}>
           {/* Header */}
             <View style={styles.tableHeader}>
-              <Text style={styles.headerCell}>Project Name</Text>
+              <Text style={styles.headerCell}>Team Name</Text>
               <Text style={styles.headerCell}>Progress</Text>
               <Text style={styles.headerCell}>Members</Text>
               <Text style={styles.headerCell}>Tasks</Text>
@@ -107,8 +107,8 @@ const App = () => {
       
             {/* Rows */}
             <FlatList
-              data={projects}
-              renderItem={({ item }) => <ProjectRow project={item} />}
+              data={teams}
+              renderItem={({ item }) => <TeamRow team={item} />}
               keyExtractor={(item) => item.id}
             />
         </View>

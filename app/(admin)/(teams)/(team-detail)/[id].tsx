@@ -6,7 +6,7 @@ import { useSearchParams } from "expo-router/build/hooks";
 import ActionButtons from "@/components/btn-optiton";
 
 
-type Project = {
+type Team = {
   id: string;
   name: string;
   description: string;
@@ -17,11 +17,11 @@ type Project = {
   endDate: string;
 };
 
-const projects = [
+const teams = [
   {
     id: "1",
-    name: "First Project",
-    description: "Here you can say more details about your project or your team.",
+    name: "First team",
+    description: "Here you can say more details about your team or your team.",
     progress: 33,
     members: 3,
     tasks: 3,
@@ -30,8 +30,8 @@ const projects = [
   },
   {
     id: "2",
-    name: "Second Project",
-    description: "This is details of your project.",
+    name: "Second team",
+    description: "This is details of your team.",
     progress: 75,
     members: 6,
     tasks: 10,
@@ -40,8 +40,8 @@ const projects = [
   },
   {
     id: "3",
-    name: "Second Project",
-    description: "This is details of your project.",
+    name: "Second team",
+    description: "This is details of your team.",
     progress: 75,
     members: 5,
     tasks: 10,
@@ -50,8 +50,8 @@ const projects = [
   },
   {
     id: "4",
-    name: "Second Project",
-    description: "This is details of your project.",
+    name: "Second team",
+    description: "This is details of your team.",
     progress: 75,
     members: 4,
     tasks: 10,
@@ -60,8 +60,8 @@ const projects = [
   },
   {
     id: "5",
-    name: "Second Project",
-    description: "This is details of your project.",
+    name: "Second team",
+    description: "This is details of your team.",
     progress: 75,
     members: 3,
     tasks: 10,
@@ -70,19 +70,19 @@ const projects = [
   },
 ];
 
-const tabs: ProjectTab[] = [
+const tabs: TeamTab[] = [
   { title: "Tasks" },
   { title: "Members" },
 ];
 
-type ProjectTab = {
+type TeamTab = {
   title: string;
 };
 
 const tasks = [
   {
     id: "1",
-    id_project: "1",
+    id_team: "1",
     name: "Design UI",
     description: "Create user interface designs for the app",
     assignee: "John Doe",
@@ -93,7 +93,7 @@ const tasks = [
   },
   {
     id: "2",
-    id_project: "1",
+    id_team: "1",
     name: "Develop Backend",
     description: "Set up backend APIs",
     assignee: "Jane Smith",
@@ -104,7 +104,7 @@ const tasks = [
   },
   {
     id: "3",
-    id_project: "1",
+    id_team: "1",
     name: "Develop Backend",
     description: "Set up environment",
     assignee: "Reed Miles",
@@ -118,7 +118,7 @@ const tasks = [
 const members = [
   {
     id: "1",
-    id_project: "1",
+    id_team: "1",
     name: "John Doe",
     age: 28,
     task: "Design UI",
@@ -126,7 +126,7 @@ const members = [
   },
   {
     id: "2",
-    id_project: "1",
+    id_team: "1",
     name: "Jane Smith",
     age: 30,
     task: "Develop Backend",
@@ -134,7 +134,7 @@ const members = [
   },
   {
     id: "3",
-    id_project: "1",
+    id_team: "1",
     name: "Reed Miles",
     age: 26,
     task: "Develop Backend",
@@ -143,15 +143,15 @@ const members = [
 ];
 
 
-const renderTasksTable = (id_project: string) => {
-  const filteredTasks = tasks.filter((task) => task.id_project === id_project);
+const renderTasksTable = (id_team: string) => {
+  const filteredTasks = tasks.filter((task) => task.id_team === id_team);
 
   const handleEdit = () => {
     router.push(`/create-task`);
   };
 
   const handleDelete = () => {
-    console.log(`Delete project ${filteredTasks.map(task => task.name).join(', ')}`);
+    console.log(`Delete team ${filteredTasks.map(task => task.name).join(', ')}`);
   };
 
   return (
@@ -192,15 +192,15 @@ const renderTasksTable = (id_project: string) => {
 };
 
 
-const renderMembersTable = (id_project: string) => {
-  const filteredMembers = members.filter((member) => member.id_project === id_project);
+const renderMembersTable = (id_team: string) => {
+  const filteredMembers = members.filter((member) => member.id_team === id_team);
 
   const handleEdit = () => {
     router.push(`/create-member`);
   };
 
   const handleDelete = () => {
-    console.log(`Delete project ${filteredMembers.map(member => member.name).join(', ')}`);
+    console.log(`Delete team ${filteredMembers.map(member => member.name).join(', ')}`);
   };
 
   return (
@@ -235,13 +235,13 @@ const renderMembersTable = (id_project: string) => {
 };
 
 
-const ProjectCard = ({ project }: { project: Project }) => {
+const TeamCard = ({ team }: { team: Team }) => {
   const handleEdit = () => {
-    console.log(`Edit project ${project.name}`);
+    console.log(`Edit team ${team.name}`);
   };
 
   const handleDelete = () => {
-    console.log(`Delete project ${project.name}`);
+    console.log(`Delete team ${team.name}`);
   };
 
   return (
@@ -249,8 +249,8 @@ const ProjectCard = ({ project }: { project: Project }) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.title}>{project.name}</Text>
-          <Text style={styles.description}>{project.description}</Text>
+          <Text style={styles.title}>{team.name}</Text>
+          <Text style={styles.description}>{team.description}</Text>
         </View>
         <ActionButtons onEdit={handleEdit} onDelete={handleDelete} />
       </View>
@@ -261,25 +261,25 @@ const ProjectCard = ({ project }: { project: Project }) => {
         <View style={styles.progressWrapper}>
           <View style={styles.progressBarContainer}>
             <View
-              style={[styles.progressBar, { width: `${project.progress}%` }]}
+              style={[styles.progressBar, { width: `${team.progress}%` }]}
             />
           </View>
-          <Text style={styles.progressText}>{project.progress}%</Text>
+          <Text style={styles.progressText}>{team.progress}%</Text>
         </View>
       </View>
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.taskCount}>{project.tasks} Tasks, {project.members} Members</Text>
+        <Text style={styles.taskCount}>{team.tasks} Tasks, {team.members} Members</Text>
         <Text style={styles.dateRange}>
-          {project.startDate} - {project.endDate}
+          {team.startDate} - {team.endDate}
         </Text>
       </View>
     </View>
   );
 };
 
-const ProjectTab = ({ id_project }: { id_project: string }) => {
+const TeamTab = ({ id_team }: { id_team: string }) => {
   const [selectedTab, setSelectedTab] = useState<number>(0);
 
   const { width } = useWindowDimensions(); 
@@ -289,13 +289,13 @@ const ProjectTab = ({ id_project }: { id_project: string }) => {
       if (selectedTab === 0) {
           return ( 
             <ScrollView horizontal={isSmallScreen}>
-                  {renderTasksTable(id_project)}
+                  {renderTasksTable(id_team)}
             </ScrollView>
           );
       } else {
         return ( 
           <ScrollView horizontal={isSmallScreen}>
-                {renderMembersTable(id_project)}
+                {renderMembersTable(id_team)}
           </ScrollView>
         );
       }
@@ -333,29 +333,29 @@ const ProjectTab = ({ id_project }: { id_project: string }) => {
 };
 
 
-const ProjectDetail = () => {
+const TeamDetail = () => {
   const searchParams = useSearchParams(); // Lấy id từ query
   const id = searchParams.get("id");
 
   // Tìm dự án tương ứng với id
-  const project = projects.find((proj) => proj.id === id);
+  const team = teams.find((proj) => proj.id === id);
 
-  if (!project) {
-    return <Text>Project not found!</Text>;
+  if (!team) {
+    return <Text>team not found!</Text>;
   }
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
     // Dùng navigation.setOptions để thay đổi tiêu đề thanh tiêu đề của trang
     navigation.setOptions({
-      title: project.name,  // Tên tiêu đề thanh header
+      title: team.name,  // Tên tiêu đề thanh header
     });
-  }, [project, navigation]);
+  }, [team, navigation]);
 
   return (
     <View style={styles.card}>
-      <ProjectCard project={project} />
-      {id && <ProjectTab id_project={id} />}
+      <TeamCard team={team} />
+      {id && <TeamTab id_team={id} />}
     </View>
   );
 };
@@ -524,4 +524,4 @@ const Tablestyles = StyleSheet.create({
 });
 
 
-export default ProjectDetail;
+export default TeamDetail;

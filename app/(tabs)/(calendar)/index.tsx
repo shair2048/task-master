@@ -19,31 +19,31 @@ const taskDates = {
 const CalendarScreen = () => {
   return (
     <View style={calendarScreenStyles.container}>
-      <Calendar
-        markingType={"period"}
-        markedDates={taskDates}
-        // onDayPress={onDayPress}
-        // theme={{
-        //   selectedDayBackgroundColor: "blue",
-        //   selectedDayTextColor: "#ffffff",
-        //   todayTextColor: "red",
-        //   arrowColor: "blue",
-        // }}
-        style={calendarScreenStyles.calendar}
-      />
-      <View style={{ gap: 10 }}>
-        <Text style={calendarScreenStyles.infoTitle}>Selected Task</Text>
-        {/* <TouchableOpacity onPress={() => {}}>
-          <Text style={calendarScreenStyles.taskTitle}>
-            Wiring Dashboard Analytics
-          </Text>
-          <View style={{ flexDirection: "row", gap: 12 }}>
-            <Text style={calendarScreenStyles.taskTag}>In Progress</Text>
-            <Text style={calendarScreenStyles.taskTag}>High</Text>
-          </View>
-        </TouchableOpacity> */}
-        <Tasks />
-      </View>
+        <Calendar
+          markingType={"period"}
+          markedDates={taskDates}
+          // onDayPress={onDayPress}
+          // theme={{
+          //   selectedDayBackgroundColor: "blue",
+          //   selectedDayTextColor: "#ffffff",
+          //   todayTextColor: "red",
+          //   arrowColor: "blue",
+          // }}
+          style={calendarScreenStyles.calendar}
+        />
+        <View style={{ gap: 10 }}>
+          <Text style={calendarScreenStyles.infoTitle}>Selected Task</Text>
+          {/* <TouchableOpacity onPress={() => {}}>
+            <Text style={calendarScreenStyles.taskTitle}>
+              Wiring Dashboard Analytics
+            </Text>
+            <View style={{ flexDirection: "row", gap: 12 }}>
+              <Text style={calendarScreenStyles.taskTag}>In Progress</Text>
+              <Text style={calendarScreenStyles.taskTag}>High</Text>
+            </View>
+          </TouchableOpacity> */}
+          <Tasks />
+        </View>
     </View>
   );
 };

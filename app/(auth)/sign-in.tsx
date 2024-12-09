@@ -55,36 +55,38 @@ const SignInScreen = () => {
 
   return (
     <View style={screenStyles.container}>
-      <Text style={screenStyles.screenTitle}>Sign In</Text>
+      <View style={screenStyles.card}>
+        <Text style={screenStyles.screenTitle}>Sign In</Text>
 
-      <TxtField
-        label="Email"
-        placeholderValue="My Email"
-        value={email}
-        onChangeText={setEmail}
-        secureText={false}
-      />
-      <TxtField
-        label="Password"
-        placeholderValue="My Password"
-        value={password}
-        onChangeText={setPassword}
-        secureText={true}
-      />
+        <TxtField
+          label="Email"
+          placeholderValue="My Email"
+          value={email}
+          onChangeText={setEmail}
+          secureText={false}
+        />
+        <TxtField
+          label="Password"
+          placeholderValue="My Password"
+          value={password}
+          onChangeText={setPassword}
+          secureText={true}
+        />
 
-      {error ? <Text style={screenStyles.txtMessage}>{error}</Text> : null}
-      {message ? <Text style={screenStyles.txtMessage}>{message}</Text> : null}
+        {error ? <Text style={screenStyles.txtMessage}>{error}</Text> : null}
+        {message ? <Text style={screenStyles.txtMessage}>{message}</Text> : null}
 
-      <Text style={screenStyles.forgotPassword}>
-        <Link href="/sign-up">Forgot Password</Link>
-      </Text>
-      <BtnAuth label="Sign In" onChangePress={handleLogin} />
-      <Text style={screenStyles.linkToSignUp}>
-        Don’t have an account?
-        <Link href="/sign-up" style={{ color: "#6938EF" }}>
-          Sign Up
-        </Link>
-      </Text>
+        <Text style={screenStyles.forgotPassword}>
+          <Link href="/sign-up">Forgot Password</Link>
+        </Text>
+        <BtnAuth label="Sign In" onChangePress={handleLogin} />
+        <Text style={screenStyles.linkToSignUp}>
+          Don’t have an account?
+          <Link href="/sign-up" style={{ color: "#6938EF" }}>
+            Sign Up
+          </Link>
+        </Text>
+      </View>
     </View>
   );
 };
@@ -99,6 +101,20 @@ const screenStyles = StyleSheet.create({
     paddingHorizontal: 32,
     gap: 24,
     backgroundColor: "white",
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+    maxWidth: 400,
+    alignSelf: "center",
+    width: "100%",
   },
   screenTitle: {
     fontSize: 24,

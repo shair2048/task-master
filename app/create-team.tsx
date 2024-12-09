@@ -8,8 +8,8 @@ import {
   ScrollView,
 } from "react-native";
 
-const CreateProjectScreen = () => {
-  const [project, setProject] = useState({
+const CreateTeamScreen = () => {
+  const [team, setTeam] = useState({
     id: "",
     name: "",
     description: "",
@@ -20,8 +20,8 @@ const CreateProjectScreen = () => {
     endDate: "",
   });
 
-  const handleInputChange = (field: keyof typeof project, value: string) => {
-    setProject((prev) => ({
+  const handleInputChange = (field: keyof typeof team, value: string) => {
+    setTeam((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -30,11 +30,11 @@ const CreateProjectScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View>
-        <Text style={styles.label}>Project ID</Text>
+        <Text style={styles.label}>Team ID</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter Project ID"
-          value={project.id}
+          placeholder="Enter Team ID"
+          value={team.id}
           onChangeText={(value) => handleInputChange("id", value)}
         />
       </View>
@@ -43,8 +43,8 @@ const CreateProjectScreen = () => {
         <Text style={styles.label}>Name</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter Project Name"
-          value={project.name}
+          placeholder="Enter Team Name"
+          value={team.name}
           onChangeText={(value) => handleInputChange("name", value)}
         />
       </View>
@@ -53,8 +53,8 @@ const CreateProjectScreen = () => {
         <Text style={styles.label}>Description</Text>
         <TextInput
           style={[styles.input, styles.textarea]}
-          placeholder="Enter Project Description"
-          value={project.description}
+          placeholder="Enter Team Description"
+          value={team.description}
           multiline={true}
           onChangeText={(value) => handleInputChange("description", value)}
         />
@@ -65,7 +65,7 @@ const CreateProjectScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Enter Progress (0-100)"
-          value={project.progress}
+          value={team.progress}
           keyboardType="numeric"
           onChangeText={(value) => handleInputChange("progress", value)}
         />
@@ -76,7 +76,7 @@ const CreateProjectScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Enter Number of Members"
-          value={project.members}
+          value={team.members}
           keyboardType="numeric"
           onChangeText={(value) => handleInputChange("members", value)}
         />
@@ -87,7 +87,7 @@ const CreateProjectScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Enter Number of Tasks"
-          value={project.tasks}
+          value={team.tasks}
           keyboardType="numeric"
           onChangeText={(value) => handleInputChange("tasks", value)}
         />
@@ -98,7 +98,7 @@ const CreateProjectScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="YYYY-MM-DD"
-          value={project.startDate}
+          value={team.startDate}
           onChangeText={(value) => handleInputChange("startDate", value)}
         />
       </View>
@@ -108,7 +108,7 @@ const CreateProjectScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="YYYY-MM-DD"
-          value={project.endDate}
+          value={team.endDate}
           onChangeText={(value) => handleInputChange("endDate", value)}
         />
       </View>
@@ -120,7 +120,7 @@ const CreateProjectScreen = () => {
   );
 };
 
-export default CreateProjectScreen;
+export default CreateTeamScreen;
 
 const styles = StyleSheet.create({
   container: {

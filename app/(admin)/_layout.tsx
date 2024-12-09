@@ -16,10 +16,10 @@ const AdminLayout = () => {
           }}
         />
         <Drawer.Screen
-          name="(projects)" 
+          name="(teams)" 
           options={{
-            drawerLabel: 'Projects Management',
-            title: 'Projects Management',
+            drawerLabel: 'Teams Management',
+            title: 'Teams Management',
           }}
         />
         <Drawer.Screen

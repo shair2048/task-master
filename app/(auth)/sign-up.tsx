@@ -49,46 +49,48 @@ const SignUpScreen = () => {
 
   return (
     <View style={screenStyles.container}>
-      <Text style={screenStyles.screenTitle}>Sign Up</Text>
+      <View style={screenStyles.card}>
+        <Text style={screenStyles.screenTitle}>Sign Up</Text>
 
-      <TxtField
-        label="Username"
-        placeholderValue="My username"
-        value={username}
-        onChangeText={setUsername}
-        secureText={false}
-      />
-      <TxtField
-        label="Email"
-        placeholderValue="My Email"
-        value={email}
-        onChangeText={setEmail}
-        secureText={false}
-      />
-      <TxtField
-        label="Password"
-        placeholderValue="My Password"
-        value={password}
-        onChangeText={setPassword}
-        secureText={true}
-      />
-      <TxtField
-        label="Confirm Password"
-        placeholderValue="Confirm My Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureText={true}
-      />
-      {/* {error ? <Text style={styles.error}>{error}</Text> : null} */}
-      {message ? <Text style={screenStyles.txtMessage}>{message}</Text> : null}
-      <BtnAuth label="Sign Up" onChangePress={handleRegister} />
+        <TxtField
+          label="Username"
+          placeholderValue="My username"
+          value={username}
+          onChangeText={setUsername}
+          secureText={false}
+        />
+        <TxtField
+          label="Email"
+          placeholderValue="My Email"
+          value={email}
+          onChangeText={setEmail}
+          secureText={false}
+        />
+        <TxtField
+          label="Password"
+          placeholderValue="My Password"
+          value={password}
+          onChangeText={setPassword}
+          secureText={true}
+        />
+        <TxtField
+          label="Confirm Password"
+          placeholderValue="Confirm My Password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureText={true}
+        />
+        {/* {error ? <Text style={styles.error}>{error}</Text> : null} */}
+        {message ? <Text style={screenStyles.txtMessage}>{message}</Text> : null}
+        <BtnAuth label="Sign Up" onChangePress={handleRegister} />
 
-      <Text style={screenStyles.linkToSignUp}>
-        Already have an account?
-        <Link href="/sign-in" style={{ color: "#6938EF" }}>
-          Sign In
-        </Link>
-      </Text>
+        <Text style={screenStyles.linkToSignUp}>
+          Already have an account?
+          <Link href="/sign-in" style={{ color: "#6938EF" }}>
+            Sign In
+          </Link>
+        </Text>
+      </View>
     </View>
   );
 };
@@ -103,6 +105,20 @@ const screenStyles = StyleSheet.create({
     paddingHorizontal: 32,
     gap: 24,
     backgroundColor: "white",
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+    maxWidth: 400,
+    alignSelf: "center",
+    width: "100%",
   },
   screenTitle: {
     fontSize: 24,
