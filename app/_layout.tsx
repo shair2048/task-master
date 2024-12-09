@@ -62,7 +62,7 @@ export default function RootLayout() {
     if (!id) return;
     try {
       const response = await api.get(`/account/${id}`);
-      console.log(response.data);
+      // console.log(response.data);
 
       setUsername(response.data.username);
       setRole(response.data.role);

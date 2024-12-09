@@ -4,6 +4,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import React, { useState } from "react";
 import { Link, useRouter } from "expo-router";
@@ -43,16 +44,25 @@ const SignInScreen = () => {
       });
       const token = response.data.token;
       const uid = response.data.uid;
+      const role = response.data.role;
+      // console.log(role);
 
       if (!token) {
         setError("Login failed: No token received");
         return;
       }
 
-      await AsyncStorage.setItem("authToken", token);
-      await AsyncStorage.setItem("userId", uid);
+      if (Platform.OS === "web" && role === "Admin") {
+        router.push("/(admin)");
+        return;
+      }
 
-      router.push("/(tabs)");
+      if (Platform.OS === "android") {
+        await AsyncStorage.setItem("authToken", token);
+        await AsyncStorage.setItem("userId", uid);
+
+        router.push("/(tabs)");
+      }
     } catch (err) {
       setError("Login failed");
     }
