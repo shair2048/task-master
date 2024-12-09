@@ -42,6 +42,7 @@ const SignInScreen = () => {
         password,
       });
       const token = response.data.token;
+      const uid = response.data.uid;
 
       if (!token) {
         setError("Login failed: No token received");
@@ -49,6 +50,7 @@ const SignInScreen = () => {
       }
 
       await AsyncStorage.setItem("authToken", token);
+      await AsyncStorage.setItem("userId", uid);
 
       router.push("/(tabs)");
     } catch (err) {

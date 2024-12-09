@@ -43,37 +43,38 @@ export default function RootLayout() {
   //   }
   // }, [isLoggedIn]);
 
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      const token = await AsyncStorage.getItem("authToken");
-      if (token) {
-        router.push("/(tabs)");
-      } else {
-        router.push("/sign-in");
-      }
-    };
-
-    checkAuthStatus();
-  }, []);
+  const checkAuthStatus = async (callback: (id: string) => void) => {
+    const token = await AsyncStorage.getItem("authToken");
+    const id = await AsyncStorage.getItem("userId");
+    if (token && id) {
+      router.push("/(tabs)");
+      callback(id);
+    } else {
+      router.push("/sign-in");
+    }
+  };
 
   const profileHandlePress = () => {
     router.push("/profile");
   };
 
-  const userInfo = async () => {
+  const userInfo = async (id: string) => {
+    if (!id) return;
     try {
-      const response = await api.get(`/account/{id}`);
+      const response = await api.get(`/account/${id}`);
       console.log(response.data);
 
       setUsername(response.data.username);
       setRole(response.data.role);
     } catch (error) {
-      console.log(error);
+      console.log("Error call API:", error);
     }
   };
 
   useEffect(() => {
-    userInfo();
+    checkAuthStatus((userId) => {
+      userInfo(userId); // Gọi userInfo khi checkAuthStatus hoàn tất và có userId
+    });
   }, []);
 
   return (
