@@ -71,6 +71,7 @@ const projects = [
 ];
 
 const tabs: ProjectTab[] = [
+  { title: "Projects" },
   { title: "Tasks" },
   { title: "Members" },
 ];

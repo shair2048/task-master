@@ -29,6 +29,13 @@ const AdminLayout = () => {
             title: 'Users Management',
           }}
         />
+        {/* <Drawer.Screen
+          name="(trash)" 
+          options={{
+            drawerLabel: 'Trash Management',
+            title: 'Trash Management',
+          }}
+        /> */}
       </Drawer>
     </GestureHandlerRootView>
   );

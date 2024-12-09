@@ -42,7 +42,42 @@ export default function RootLayout() {
   return (
     <Stack>
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      {/* <Stack.Screen name="(admin)" options={{ headerShown: false }} /> */}
+      <Stack.Screen
+        name="(admin)"
+        options={{
+          header: (props) => (
+            <SafeAreaView>
+              <View style={[styles.header, styles.container]}>
+                <TouchableOpacity onPress={() => {}} style={styles.container}>
+                  {/* <Image
+                    source={require("../assets/images/default-avt.png")}
+                    style={{ width: 44, height: 44, borderRadius: 100 }}
+                  /> */}
+                  <DefaultAvatar />
+
+                  <View style={textStyles.baseText}>
+                    <Text style={textStyles.nameFont}>Tonald Drump</Text>
+                    <Text style={textStyles.roleFont}>Admin</Text>
+                  </View>
+                </TouchableOpacity>
+
+                <View style={styles.container}>
+                  <TouchableOpacity
+                    onPress={() => {}}
+                    style={{ marginRight: 26 }}
+                  >
+                    <Message />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={() => {}}>
+                    <Notification />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </SafeAreaView>
+          ),
+        }}
+      />
       <Stack.Screen
         name="(tabs)"
         options={{
@@ -95,6 +130,26 @@ export default function RootLayout() {
           header: () => (
             <SafeAreaView>
               <CustomHeader title="Create New Task" />
+            </SafeAreaView>
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="create-member"
+        options={{
+          header: () => (
+            <SafeAreaView>
+              <CustomHeader title="User Info" />
+            </SafeAreaView>
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="create-project"
+        options={{
+          header: () => (
+            <SafeAreaView>
+              <CustomHeader title="Project Info" />
             </SafeAreaView>
           ),
         }}

@@ -56,7 +56,7 @@ const ProjectRow = ({ project }: { project: Project }) => {
   const router = useRouter(); // Khởi tạo useRouter
 
   const handleEdit = () => {
-    console.log(`Edit project ${project.name}`);
+    router.push(`/create-project`); 
   };
 
   const handleDelete = () => {
