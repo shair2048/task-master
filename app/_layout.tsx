@@ -33,11 +33,11 @@ const isLoggedIn = false;
 export default function RootLayout() {
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (!isLoggedIn) {
-  //     router.push("/sign-in");
-  //   }
-  // }, [isLoggedIn]);
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push("/sign-in");
+    }
+  }, [isLoggedIn]);
 
   const profileHandlePress = () => {
     router.push("/profile");
@@ -142,7 +142,7 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen
-        name="create-member"
+        name="create-user"
         options={{
           header: () => (
             <SafeAreaView>
@@ -152,7 +152,7 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen
-        name="create-project"
+        name="create-team"
         options={{
           header: () => (
             <SafeAreaView>

@@ -89,7 +89,7 @@ const TaskList = ({ projectId }: { projectId: string }) => {
               <Text style={Tablestyles.cell}>{item.endDate}</Text>
               <Text style={Tablestyles.cell}>
                 <ActionButtons
-                  onEdit={() => router.push(`/create-member`)}
+                  onEdit={() => router.push(`/create-user`)}
                   onDelete={() => console.log(`Delete task ${item.name}`)}
                 />
               </Text>
@@ -136,7 +136,7 @@ const ProjectList = ({ userId }: { userId: string }) => {
 
 const ProjectCard = ({ user, id }: { user: User, id: string }) => {
   const handleEdit = () => {
-    router.push(`/create-member`);
+    router.push(`/create-user`);
   };
 
   const handleDelete = () => {

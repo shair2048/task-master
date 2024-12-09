@@ -196,7 +196,7 @@ const renderMembersTable = (id_team: string) => {
   const filteredMembers = members.filter((member) => member.id_team === id_team);
 
   const handleEdit = () => {
-    router.push(`/create-member`);
+    router.push(`/create-user`);
   };
 
   const handleDelete = () => {
