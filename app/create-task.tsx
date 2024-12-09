@@ -96,27 +96,28 @@ const CreateTaskScreen = () => {
 
   return (
     // <ScrollView>
-    <View style={styles.container}>
-      <View>
-        <Text style={styles.title}>Task Title</Text>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Enter Task Title"
-          placeholderTextColor="#98A2B3"
-        />
-      </View>
-      <View>
-        <Text style={styles.title}>Task Description</Text>
-        <TextInput
-          style={[styles.textInput, { height: 100 }]}
-          placeholder="Enter Task Description"
-          placeholderTextColor="#98A2B3"
-          multiline={true}
-          numberOfLines={5}
-        />
-      </View>
+    <View>
+      <View style={styles.container}>
+        <View>
+          <Text style={styles.title}>Task Title</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Enter Task Title"
+            placeholderTextColor="#98A2B3"
+          />
+        </View>
+        <View>
+          <Text style={styles.title}>Task Description</Text>
+          <TextInput
+            style={[styles.textInput, { height: 100 }]}
+            placeholder="Enter Task Description"
+            placeholderTextColor="#98A2B3"
+            multiline={true}
+            numberOfLines={5}
+          />
+        </View>
 
-      {/* {btnInfos.map((btnInfo, index) => (
+        {/* {btnInfos.map((btnInfo, index) => (
           <View key={index}>
             <Text style={styles.title}>{btnInfo.label}</Text>
             <TouchableOpacity onPress={showModal} style={btnStyles.container}>
@@ -125,66 +126,72 @@ const CreateTaskScreen = () => {
             </TouchableOpacity>
           </View>
         ))} */}
-      <View style={{ zIndex: 2 }}>
-        <Text style={styles.title}>Assign To</Text>
+        <View style={{ zIndex: 2 }}>
+          <Text style={styles.title}>Assign To</Text>
 
-        <DropDownPicker
-          open={open}
-          value={value}
-          items={items}
-          setOpen={setOpen}
-          setValue={setValue}
-          setItems={setItems}
-          placeholder="Select Member"
-          style={btnStyles.container}
-          dropDownDirection="BOTTOM"
-        />
-      </View>
-      <View style={{ zIndex: 1 }}>
-        <Text style={styles.title}>Priority</Text>
+          <DropDownPicker
+            open={open}
+            value={value}
+            items={items}
+            setOpen={setOpen}
+            setValue={setValue}
+            setItems={setItems}
+            placeholder="Select Member"
+            style={btnStyles.container}
+            dropDownDirection="BOTTOM"
+          />
+        </View>
+        <View style={{ zIndex: 1 }}>
+          <Text style={styles.title}>Priority</Text>
 
-        <DropDownPicker
-          open={openPriority}
-          value={valuePriority}
-          items={itemsPriority}
-          setOpen={setOpenPriority}
-          setValue={setValuePriority}
-          setItems={setItemsPriority}
-          placeholder="Select Priority"
-          style={btnStyles.container}
-          dropDownDirection="BOTTOM"
-        />
-      </View>
-      <View style={{ zIndex: 0 }}>
-        <Text style={styles.title}>Select Deadline Date</Text>
+          <DropDownPicker
+            open={openPriority}
+            value={valuePriority}
+            items={itemsPriority}
+            setOpen={setOpenPriority}
+            setValue={setValuePriority}
+            setItems={setItemsPriority}
+            placeholder="Select Priority"
+            style={btnStyles.container}
+            dropDownDirection="BOTTOM"
+          />
+        </View>
+        <View style={{ zIndex: 0 }}>
+          <Text style={styles.title}>Select Deadline Date</Text>
 
-        <TouchableOpacity onPress={showDatePicker} style={btnStyles.container}>
-          <Text style={btnStyles.btnTitle}>
-            {!isDateSelected ? "Select Date" : dateString}
-          </Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            onPress={showDatePicker}
+            style={btnStyles.container}
+          >
+            <Text style={btnStyles.btnTitle}>
+              {!isDateSelected ? "Select Date" : dateString}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-      <View style={{ zIndex: 0 }}>
-        <Text style={styles.title}>Select Deadline Time</Text>
+        <View style={{ zIndex: 0 }}>
+          <Text style={styles.title}>Select Deadline Time</Text>
 
-        <TouchableOpacity onPress={showTimePicker} style={btnStyles.container}>
-          <Text style={btnStyles.btnTitle}>
-            {!isTimeSelected ? "Select Time" : timeString}
-          </Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            onPress={showTimePicker}
+            style={btnStyles.container}
+          >
+            <Text style={btnStyles.btnTitle}>
+              {!isTimeSelected ? "Select Time" : timeString}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-      {show && (
-        <DateTimePicker
-          value={date}
-          mode={mode}
-          is24Hour={true}
-          // display={Platform.OS === "ios" ? "spinner" : "default"} // Spinner cho iOS
-          onChange={onChange}
-        />
-      )}
-      {/* <Picker
+        {show && (
+          <DateTimePicker
+            value={date}
+            mode={mode}
+            is24Hour={true}
+            // display={Platform.OS === "ios" ? "spinner" : "default"} // Spinner cho iOS
+            onChange={onChange}
+          />
+        )}
+        {/* <Picker
           selectedValue={selectedLanguage}
           onValueChange={(itemValue, itemIndex) =>
             setSelectedLanguage(itemValue)
@@ -193,8 +200,10 @@ const CreateTaskScreen = () => {
           <Picker.Item label="Java" value="java" />
           <Picker.Item label="JavaScript" value="js" />
         </Picker> */}
-      {/* <CreateTaskButton /> */}
+      </View>
+      <CreateTaskButton label="Create Task" onChangePress={() => {}} />
     </View>
+
     // </ScrollView>
   );
 };

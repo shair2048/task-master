@@ -2,20 +2,19 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
 import { useRouter } from "expo-router";
 
-const CreateTaskButton = () => {
-  const router = useRouter();
+interface createTaskButtonProps {
+  label: string;
+  onChangePress: () => void;
+}
 
-  const handlePress = () => {
-    router.push("/create-task");
-  };
-
+const CreateTaskButton = ({ label, onChangePress }: createTaskButtonProps) => {
   return (
     <View style={btnCreateTaskStyles.container}>
       <TouchableOpacity
-        onPress={handlePress}
+        onPress={onChangePress}
         style={btnCreateTaskStyles.btnStyles}
       >
-        <Text style={btnCreateTaskStyles.btnTextStyles}>Create Task</Text>
+        <Text style={btnCreateTaskStyles.btnTextStyles}>{label}</Text>
       </TouchableOpacity>
     </View>
   );
