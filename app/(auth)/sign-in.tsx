@@ -10,6 +10,7 @@ import { Link, useRouter } from "expo-router";
 import BtnAuth from "@/components/btn-auth";
 import TxtField from "@/components/txt-field";
 import api from "../../api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // interface FieldLabels {
 //   label: string;
@@ -36,22 +37,26 @@ const SignInScreen = () => {
     }
 
     try {
-      await api.post("/login", {
+      const response = await api.post("/login", {
         email,
         password,
       });
-      // const token = response.data.token;
+      const token = response.data.token;
 
-      // if (!token) {
-      //   setError("Login failed: No token received");
-      //   return;
-      // }
+      if (!token) {
+        setError("Login failed: No token received");
+        return;
+      }
+
+      // await AsyncStorage.setItem("key", "jodjoijboajobj");
 
       router.push("/(tabs)");
     } catch (err) {
       setError("Login failed");
     }
   };
+
+  // storeData();
 
   return (
     <View style={screenStyles.container}>

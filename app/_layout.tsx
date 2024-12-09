@@ -12,9 +12,10 @@ import Notification from "../assets/images/notification-icon.svg";
 import DefaultAvatar from "../assets/images/default-avt.svg";
 import Message from "../assets/images/message-icon.svg";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import BackIcon from "../assets/images/back-icon.svg";
 import CustomHeader from "../components/custom-header";
+import api from "../api";
 
 // const headerIconStyle = {
 //   marginHorizontal: 20,
@@ -32,6 +33,8 @@ const isLoggedIn = false;
 
 export default function RootLayout() {
   const router = useRouter();
+  const [username, setUsername] = useState("");
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -42,6 +45,22 @@ export default function RootLayout() {
   const profileHandlePress = () => {
     router.push("/profile");
   };
+
+  const userInfo = async () => {
+    try {
+      const response = await api.get(`/account/{id}`);
+      console.log(response.data);
+
+      setUsername(response.data.username);
+      setRole(response.data.role);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    userInfo();
+  }, []);
 
   return (
     <Stack>
@@ -64,8 +83,8 @@ export default function RootLayout() {
                   <DefaultAvatar />
 
                   <View style={textStyles.baseText}>
-                    <Text style={textStyles.nameFont}>Tonald Drump</Text>
-                    <Text style={textStyles.roleFont}>Personally</Text>
+                    <Text style={textStyles.nameFont}>{username}</Text>
+                    <Text style={textStyles.roleFont}>{role}</Text>
                   </View>
                 </TouchableOpacity>
 
