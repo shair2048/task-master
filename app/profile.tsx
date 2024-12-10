@@ -1,26 +1,42 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import ProfileItems from "@/components/profile-items";
+import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ProfileScreen = () => {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("authToken");
+      await AsyncStorage.removeItem("userId");
+
+      router.push("/sign-in");
+      router.replace("/sign-in");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
   return (
     <View style={profileScreenStyles.container}>
-      <View style={profileScreenStyles.card}>
-        <View style={profileScreenStyles.generalInfo}>
-          <TouchableOpacity>
-            <Image
-              style={profileScreenStyles.avatar}
-              source={require("../assets/images/avt-full.png")}
-            />
-          </TouchableOpacity>
+      {/* <View style={profileScreenStyles.card}> */}
+      <View style={profileScreenStyles.generalInfo}>
+        <TouchableOpacity>
+          <Image
+            style={profileScreenStyles.avatar}
+            source={require("../assets/images/avt-full.png")}
+          />
+        </TouchableOpacity>
 
-          <Text style={profileScreenStyles.name}>Tonald Drump</Text>
-          <Text style={profileScreenStyles.roleName}>Personally</Text>
-        </View>
-        <View style={{ gap: 8 }}>
-          <Text style={profileScreenStyles.infoTitle}>ACCOUNT</Text>
-          <View style={profileScreenStyles.accountInfo}>
-            {/* <View>
+        <Text style={profileScreenStyles.name}>Tonald Drump</Text>
+        <Text style={profileScreenStyles.roleName}>Personally</Text>
+      </View>
+      <View style={{ gap: 8 }}>
+        <Text style={profileScreenStyles.infoTitle}>ACCOUNT</Text>
+        <View style={profileScreenStyles.accountInfo}>
+          {/* <View>
               <Text style={profileScreenStyles.infoItem}>******</Text>
               <TouchableOpacity onPress={() => {}}>
                 <Text
@@ -31,19 +47,19 @@ const ProfileScreen = () => {
               </TouchableOpacity>
             </View> */}
 
-            <ProfileItems value="abc@gmail.com" onChangePress={() => {}} />
-            <ProfileItems value="******" onChangePress={() => {}} />
-          </View>
-        </View>
-        <View style={{ gap: 8 }}>
-          <Text style={profileScreenStyles.infoTitle}>SETTING</Text>
-          <View style={profileScreenStyles.accountInfo}>
-            <TouchableOpacity>
-              <Text style={profileScreenStyles.item}>Logout</Text>
-            </TouchableOpacity>
-          </View>
+          <ProfileItems value="abc@gmail.com" onChangePress={() => {}} />
+          <ProfileItems value="******" onChangePress={() => {}} />
         </View>
       </View>
+      <View style={{ gap: 8 }}>
+        <Text style={profileScreenStyles.infoTitle}>SETTING</Text>
+        <View style={profileScreenStyles.accountInfo}>
+          <TouchableOpacity onPress={handleLogout}>
+            <Text style={profileScreenStyles.item}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      {/* </View> */}
     </View>
   );
 };
