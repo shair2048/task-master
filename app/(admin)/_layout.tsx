@@ -16,10 +16,10 @@ const AdminLayout = () => {
           }}
         />
         <Drawer.Screen
-          name="(projects)" 
+          name="(teams)" 
           options={{
-            drawerLabel: 'Projects Management',
-            title: 'Projects Management',
+            drawerLabel: 'Teams Management',
+            title: 'Teams Management',
           }}
         />
         <Drawer.Screen
@@ -29,6 +29,13 @@ const AdminLayout = () => {
             title: 'Users Management',
           }}
         />
+        {/* <Drawer.Screen
+          name="(trash)" 
+          options={{
+            drawerLabel: 'Trash Management',
+            title: 'Trash Management',
+          }}
+        /> */}
       </Drawer>
     </GestureHandlerRootView>
   );

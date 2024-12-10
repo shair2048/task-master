@@ -1,5 +1,6 @@
 import CreateTaskButton from '@/components/btn-create-task';
 import ActionButtons from '@/components/btn-optiton';
+import { router } from 'expo-router';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 
@@ -116,7 +117,7 @@ const DashboardScreen = () => {
                     <Text style={tableStyles.tableCell}>{project.deadline}</Text>
                     <View style={tableStyles.tableCell}>
                       <ActionButtons
-                        onEdit={() => console.log(`Edit project ${project.id}`)}
+                        onEdit={() => router.push('/create-project')}
                         onDelete={() => console.log(`Delete project ${project.id}`)}
                       />
                     </View>
@@ -144,7 +145,7 @@ const DashboardScreen = () => {
                     <Text style={tableStyles.tableCell}>{task.deadline}</Text>
                     <View style={tableStyles.tableCell}>
                       <ActionButtons
-                        onEdit={() => console.log(`Edit task ${task.id}`)}
+                        onEdit={() => router.push('/create-task')}
                         onDelete={() => console.log(`Delete task ${task.id}`)}
                       />
                     </View>

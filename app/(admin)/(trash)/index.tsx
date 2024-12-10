@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, FlatList, useWindowDimensions } from "react-native";
-import { SearchParams } from "expo-router";
+import { Text, View, StyleSheet, TouchableOpacity, FlatList, useWindowDimensions, ScrollView } from "react-native";
+import { router, SearchParams } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import { useSearchParams } from "expo-router/build/hooks";
 import ActionButtons from "@/components/btn-optiton";
@@ -71,6 +71,7 @@ const projects = [
 ];
 
 const tabs: ProjectTab[] = [
+  { title: "Projects" },
   { title: "Tasks" },
   { title: "Members" },
 ];
@@ -122,7 +123,7 @@ const members = [
     name: "John Doe",
     age: 28,
     task: "Design UI",
-    role: "UI/UX Designer",
+    role: "Leader",
   },
   {
     id: "2",
@@ -130,7 +131,7 @@ const members = [
     name: "Jane Smith",
     age: 30,
     task: "Develop Backend",
-    role: "Backend Developer",
+    role: "Personal",
   },
   {
     id: "3",
@@ -138,7 +139,7 @@ const members = [
     name: "Reed Miles",
     age: 26,
     task: "Develop Backend",
-    role: "Backend Developer",
+    role: "Personal",
   },
 ];
 
@@ -147,7 +148,7 @@ const renderTasksTable = (id_project: string) => {
   const filteredTasks = tasks.filter((task) => task.id_project === id_project);
 
   const handleEdit = () => {
-    console.log(`Edit project ${filteredTasks.map(task => task.name).join(', ')}`);
+    router.push(`/create-task`);
   };
 
   const handleDelete = () => {
@@ -196,7 +197,7 @@ const renderMembersTable = (id_project: string) => {
   const filteredMembers = members.filter((member) => member.id_project === id_project);
 
   const handleEdit = () => {
-    console.log(`Edit project ${filteredMembers.map(member => member.name).join(', ')}`);
+    router.push(`/create-member`);
   };
 
   const handleDelete = () => {
@@ -288,12 +289,16 @@ const ProjectTab = ({ id_project }: { id_project: string }) => {
   const renderTabContent = () => {
       if (selectedTab === 0) {
           return ( 
-              <View style={Tablestyles.container}>
+            <ScrollView horizontal={isSmallScreen}>
                   {renderTasksTable(id_project)}
-              </View>
+            </ScrollView>
           );
       } else {
-          return renderMembersTable(id_project); // Truyền id_project
+        return ( 
+          <ScrollView horizontal={isSmallScreen}>
+                {renderMembersTable(id_project)}
+          </ScrollView>
+        );
       }
   };
 
@@ -323,7 +328,7 @@ const ProjectTab = ({ id_project }: { id_project: string }) => {
           </View>
 
           {/* Tab Content */}
-          <View style={TabsStyles.tabItem}>{renderTabContent()}</View>
+          <View>{renderTabContent()}</View>
       </View>
   );
 };
@@ -483,7 +488,6 @@ const Tablestyles = StyleSheet.create({
   },
   table: {
     width: "100%",
-    minWidth: 500,
     marginTop: 12,
   },
   tableHeader: {
