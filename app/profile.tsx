@@ -36,17 +36,6 @@ const ProfileScreen = () => {
       <View style={{ gap: 8 }}>
         <Text style={profileScreenStyles.infoTitle}>ACCOUNT</Text>
         <View style={profileScreenStyles.accountInfo}>
-          {/* <View>
-              <Text style={profileScreenStyles.infoItem}>******</Text>
-              <TouchableOpacity onPress={() => {}}>
-                <Text
-                  style={[profileScreenStyles.infoItem, { color: "#B6C2D7" }]}
-                >
-                  Change
-                </Text>
-              </TouchableOpacity>
-            </View> */}
-
           <ProfileItems value="abc@gmail.com" onChangePress={() => {}} />
           <ProfileItems value="******" onChangePress={() => {}} />
         </View>
