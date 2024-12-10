@@ -1,4 +1,11 @@
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Platform,
+  useWindowDimensions,
+} from "react-native";
 import React, { useState } from "react";
 import BtnAuth from "@/components/btn-auth";
 import { Link, useRouter } from "expo-router";
@@ -17,6 +24,8 @@ import api from "../../api";
 // ];
 
 const SignUpScreen = () => {
+  const { width } = useWindowDimensions();
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,79 +56,73 @@ const SignUpScreen = () => {
     }
   };
 
+  const dynamicStyles = getDynamicStyles(width);
+
   return (
-    <View style={screenStyles.container}>
-      <View style={screenStyles.card}>
-        <Text style={screenStyles.screenTitle}>Sign Up</Text>
+    <View style={[screenStyles.container, dynamicStyles.container]}>
+      <Text style={screenStyles.screenTitle}>Sign Up</Text>
 
-        <TxtField
-          label="Username"
-          placeholderValue="My username"
-          value={username}
-          onChangeText={setUsername}
-          secureText={false}
-        />
-        <TxtField
-          label="Email"
-          placeholderValue="My Email"
-          value={email}
-          onChangeText={setEmail}
-          secureText={false}
-        />
-        <TxtField
-          label="Password"
-          placeholderValue="My Password"
-          value={password}
-          onChangeText={setPassword}
-          secureText={true}
-        />
-        <TxtField
-          label="Confirm Password"
-          placeholderValue="Confirm My Password"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureText={true}
-        />
-        {/* {error ? <Text style={styles.error}>{error}</Text> : null} */}
-        {message ? <Text style={screenStyles.txtMessage}>{message}</Text> : null}
-        <BtnAuth label="Sign Up" onChangePress={handleRegister} />
+      <TxtField
+        label="Username"
+        placeholderValue="My username"
+        value={username}
+        onChangeText={setUsername}
+        secureText={false}
+      />
+      <TxtField
+        label="Email"
+        placeholderValue="My Email"
+        value={email}
+        onChangeText={setEmail}
+        secureText={false}
+      />
+      <TxtField
+        label="Password"
+        placeholderValue="My Password"
+        value={password}
+        onChangeText={setPassword}
+        secureText={true}
+      />
+      <TxtField
+        label="Confirm Password"
+        placeholderValue="Confirm My Password"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+        secureText={true}
+      />
+      {/* {error ? <Text style={styles.error}>{error}</Text> : null} */}
+      {message ? <Text style={screenStyles.txtMessage}>{message}</Text> : null}
+      <BtnAuth label="Sign Up" onChangePress={handleRegister} />
 
-        <Text style={screenStyles.linkToSignUp}>
-          Already have an account?
-          <Link href="/sign-in" style={{ color: "#6938EF" }}>
-            Sign In
-          </Link>
-        </Text>
-      </View>
+      <Text style={screenStyles.linkToSignUp}>
+        Already have an account?
+        <Link href="/sign-in" style={{ color: "#6938EF" }}>
+          Sign In
+        </Link>
+      </Text>
     </View>
   );
 };
 
 export default SignUpScreen;
 
+const getDynamicStyles = (width: number) =>
+  StyleSheet.create({
+    container: {
+      paddingHorizontal: Platform.OS === "web" ? width * 0.37 : 32,
+    },
+  });
+
 const screenStyles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "center",
-    paddingHorizontal: 32,
+    // paddingHorizontal: 32,
     gap: 24,
     backgroundColor: "white",
   },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-    maxWidth: 400,
-    alignSelf: "center",
-    width: "100%",
-  },
+
   screenTitle: {
     fontSize: 24,
     fontWeight: "600",

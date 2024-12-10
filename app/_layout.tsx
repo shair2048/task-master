@@ -73,7 +73,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     checkAuthStatus((userId) => {
-      userInfo(userId); // Gọi userInfo khi checkAuthStatus hoàn tất và có userId
+      userInfo(userId);
     });
   }, []);
 
@@ -191,7 +191,7 @@ export default function RootLayout() {
           header: () => (
             <SafeAreaView>
               <CustomHeader title="Project Info" />
-              </SafeAreaView>
+            </SafeAreaView>
           ),
         }}
       />
