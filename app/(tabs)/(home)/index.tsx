@@ -1,5 +1,8 @@
+import api from "@/api";
 import Tasks from "@/app/tasks";
-import { Link } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Link, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -10,6 +13,36 @@ import {
 } from "react-native";
 
 const HomeScreen = () => {
+  const router = useRouter();
+
+  type Task = {
+    taskName: string;
+    taskStatus: string;
+    priority: string;
+    deadline: string;
+  };
+
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  const taskInfo = async () => {
+    const id = await AsyncStorage.getItem("userId");
+
+    if (!id) return;
+
+    try {
+      const response = await api.get(`/tasks/${id}`);
+
+      setTasks(response.data);
+    } catch (error) {
+      console.log("Error call API:", error);
+    }
+  };
+
+  useEffect(() => {
+    taskInfo();
+    // console.log(tasks);
+  }, []);
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollView>
@@ -20,12 +53,22 @@ const HomeScreen = () => {
               The tasks assigned to you for today
             </Text>
           </View>
-          <Tasks />
-          <Tasks />
-          <Tasks />
-          <Tasks />
-          <Tasks />
-          <Tasks />
+          {tasks.map((task, idex) => (
+            <Tasks
+              key={idex}
+              taskName={task.taskName}
+              taskStatus={task.taskStatus}
+              taskPriority={task.priority}
+              deadline={task.deadline}
+            />
+          ))}
+
+          {/* <Tasks
+            taskName="Task 1"
+            taskStatus="To do"
+            taskPriority="High"
+            deadline="15-12-2024"
+          /> */}
         </View>
       </ScrollView>
     </View>

@@ -3,7 +3,19 @@ import React from "react";
 import CalendarFillIcon from "../assets/images/calendar-fill-icon.svg";
 import { useRouter } from "expo-router";
 
-const Tasks = () => {
+interface taskInfoProps {
+  taskName: string;
+  taskStatus: string;
+  taskPriority: string;
+  deadline: string;
+}
+
+const Tasks = ({
+  taskName,
+  taskStatus,
+  taskPriority,
+  deadline,
+}: taskInfoProps) => {
   const router = useRouter();
 
   const handlePress = () => {
@@ -12,10 +24,10 @@ const Tasks = () => {
 
   return (
     <TouchableOpacity onPress={handlePress} style={taskInfoStyles.taskInfo}>
-      <Text style={taskInfoStyles.taskTitle}>Wiring Dashboard Analytics</Text>
+      <Text style={taskInfoStyles.taskTitle}>{taskName}</Text>
       <View style={{ flexDirection: "row", gap: 12 }}>
-        <Text style={taskInfoStyles.taskTag}>In Progress</Text>
-        <Text style={taskInfoStyles.taskTag}>High</Text>
+        <Text style={taskInfoStyles.taskTag}>{taskStatus}</Text>
+        <Text style={taskInfoStyles.taskTag}>{taskPriority}</Text>
       </View>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View style={taskInfoStyles.members}>
@@ -23,7 +35,7 @@ const Tasks = () => {
         </View>
         <View style={taskInfoStyles.taskDeadline}>
           <CalendarFillIcon width={16} height={16} color="#D0D5DD" />
-          <Text style={taskInfoStyles.textDeadline}>01/12/2024</Text>
+          <Text style={taskInfoStyles.textDeadline}>{deadline}</Text>
         </View>
       </View>
     </TouchableOpacity>

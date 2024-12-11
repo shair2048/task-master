@@ -19,21 +19,21 @@ const taskDates = {
 const CalendarScreen = () => {
   return (
     <View style={calendarScreenStyles.container}>
-        <Calendar
-          markingType={"period"}
-          markedDates={taskDates}
-          // onDayPress={onDayPress}
-          // theme={{
-          //   selectedDayBackgroundColor: "blue",
-          //   selectedDayTextColor: "#ffffff",
-          //   todayTextColor: "red",
-          //   arrowColor: "blue",
-          // }}
-          style={calendarScreenStyles.calendar}
-        />
-        <View style={{ gap: 10 }}>
-          <Text style={calendarScreenStyles.infoTitle}>Selected Task</Text>
-          {/* <TouchableOpacity onPress={() => {}}>
+      <Calendar
+        markingType={"period"}
+        markedDates={taskDates}
+        // onDayPress={onDayPress}
+        // theme={{
+        //   selectedDayBackgroundColor: "blue",
+        //   selectedDayTextColor: "#ffffff",
+        //   todayTextColor: "red",
+        //   arrowColor: "blue",
+        // }}
+        style={calendarScreenStyles.calendar}
+      />
+      <View style={{ gap: 10 }}>
+        <Text style={calendarScreenStyles.infoTitle}>Selected Task</Text>
+        {/* <TouchableOpacity onPress={() => {}}>
             <Text style={calendarScreenStyles.taskTitle}>
               Wiring Dashboard Analytics
             </Text>
@@ -42,8 +42,13 @@ const CalendarScreen = () => {
               <Text style={calendarScreenStyles.taskTag}>High</Text>
             </View>
           </TouchableOpacity> */}
-          <Tasks />
-        </View>
+        <Tasks
+          taskName="Task 1"
+          taskStatus="To do"
+          taskPriority="High"
+          deadline="15-12-2024"
+        />
+      </View>
     </View>
   );
 };
