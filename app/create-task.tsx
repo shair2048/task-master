@@ -23,6 +23,9 @@ import DropDownPicker from "react-native-dropdown-picker";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import { useRouter } from "expo-router";
+import api from "@/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface BtnInfo {
   label: string;
@@ -42,7 +45,22 @@ const taskPriorityLabels = [
 ];
 
 const CreateTaskScreen = () => {
-  // const [modalVisible, setModalVisible] = useState(false);
+  const router = useRouter();
+
+  // Task Information
+  const [taskName, setTaskName] = useState("");
+  const [taskDescription, setTaskDescription] = useState("");
+
+  // Priority Dropdown
+  const [openPriority, setOpenPriority] = useState(false);
+  const [priority, setValuePriority] = useState(null);
+  const [itemsPriority, setItemsPriority] = useState([
+    { label: "Low", value: "Low" },
+    { label: "Medium", value: "Medium" },
+    { label: "High", value: "High" },
+  ]);
+
+  // Assign To Dropdown
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
@@ -50,22 +68,18 @@ const CreateTaskScreen = () => {
     { label: "Deutsch", value: "de" },
     { label: "French", value: "fr" },
   ]);
-  const [openPriority, setOpenPriority] = useState(false);
-  const [valuePriority, setValuePriority] = useState(null);
-  const [itemsPriority, setItemsPriority] = useState([
-    { label: "Low", value: "low" },
-    { label: "Medium", value: "medium" },
-    { label: "High", value: "high" },
-  ]);
 
   // const showModal = () => setModalVisible(true);
   // const hideModal = () => setModalVisible(false);
 
+  // Date and Time Picker
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [mode, setMode] = useState<"date" | "time">("date");
   const [isDateSelected, setIsDateSelected] = useState(false);
   const [isTimeSelected, setIsTimeSelected] = useState(false);
+
+  const [error, setError] = useState("");
 
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     setShow(false);
@@ -94,6 +108,41 @@ const CreateTaskScreen = () => {
   const dateString = date.toLocaleDateString();
   const timeString = date.toLocaleTimeString();
 
+  const handleCreateTask = async () => {
+    const id = await AsyncStorage.getItem("userId");
+
+    try {
+      // Kết hợp date và time vào deadline
+      const combinedDeadline = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds()
+      );
+
+      const deadline = combinedDeadline.toISOString();
+
+      // console.log("userId:", id);
+      // console.log("taskName:", taskName);
+      // console.log("taskDescription:", taskDescription);
+      // console.log("priority:", priority);
+      // console.log("deadline:", deadline);
+
+      await api.post(`/tasks/${id}`, {
+        taskName,
+        taskDescription,
+        priority,
+        deadline,
+      });
+
+      router.push("/(tabs)/(tasks)");
+    } catch (err) {
+      setError("Create task failed");
+    }
+  };
+
   return (
     // <ScrollView>
     <View>
@@ -104,6 +153,7 @@ const CreateTaskScreen = () => {
             style={styles.textInput}
             placeholder="Enter Task Title"
             placeholderTextColor="#98A2B3"
+            onChangeText={setTaskName}
           />
         </View>
         <View>
@@ -114,6 +164,7 @@ const CreateTaskScreen = () => {
             placeholderTextColor="#98A2B3"
             multiline={true}
             numberOfLines={5}
+            onChangeText={setTaskDescription}
           />
         </View>
 
@@ -146,7 +197,7 @@ const CreateTaskScreen = () => {
 
           <DropDownPicker
             open={openPriority}
-            value={valuePriority}
+            value={priority}
             items={itemsPriority}
             setOpen={setOpenPriority}
             setValue={setValuePriority}
@@ -191,17 +242,8 @@ const CreateTaskScreen = () => {
             onChange={onChange}
           />
         )}
-        {/* <Picker
-          selectedValue={selectedLanguage}
-          onValueChange={(itemValue, itemIndex) =>
-            setSelectedLanguage(itemValue)
-          }
-        >
-          <Picker.Item label="Java" value="java" />
-          <Picker.Item label="JavaScript" value="js" />
-        </Picker> */}
       </View>
-      <CreateTaskButton label="Create Task" onChangePress={() => {}} />
+      <CreateTaskButton label="Create Task" onChangePress={handleCreateTask} />
     </View>
 
     // </ScrollView>
