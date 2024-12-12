@@ -16,6 +16,7 @@ const HomeScreen = () => {
   const router = useRouter();
 
   type Task = {
+    _id: string;
     taskName: string;
     taskStatus: string;
     priority: string;
@@ -30,7 +31,7 @@ const HomeScreen = () => {
     if (!id) return;
 
     try {
-      const response = await api.get(`/tasks/${id}`);
+      const response = await api.get(`/tasks/user/${id}`);
 
       setTasks(response.data);
     } catch (error) {
@@ -56,19 +57,13 @@ const HomeScreen = () => {
           {tasks.map((task, idex) => (
             <Tasks
               key={idex}
+              _id={task._id}
               taskName={task.taskName}
               taskStatus={task.taskStatus}
               taskPriority={task.priority}
               deadline={task.deadline}
             />
           ))}
-
-          {/* <Tasks
-            taskName="Task 1"
-            taskStatus="To do"
-            taskPriority="High"
-            deadline="15-12-2024"
-          /> */}
         </View>
       </ScrollView>
     </View>

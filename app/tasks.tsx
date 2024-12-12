@@ -4,6 +4,7 @@ import CalendarFillIcon from "../assets/images/calendar-fill-icon.svg";
 import { useRouter } from "expo-router";
 
 interface taskInfoProps {
+  _id: string;
   taskName: string;
   taskStatus: string;
   taskPriority: string;
@@ -11,6 +12,7 @@ interface taskInfoProps {
 }
 
 const Tasks = ({
+  _id,
   taskName,
   taskStatus,
   taskPriority,
@@ -19,7 +21,7 @@ const Tasks = ({
   const router = useRouter();
 
   const handlePress = () => {
-    router.push("/task-details");
+    router.push({ pathname: "/task-details", params: { id: _id } });
   };
 
   return (

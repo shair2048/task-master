@@ -1,43 +1,85 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CalendarFillIcon from "../assets/images/calendar-fill-icon.svg";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import api from "@/api";
 
 const TaskDetailScreen = () => {
+  // const router = useRouter();
+  const params = useLocalSearchParams();
+
+  type Task = {
+    taskName: string;
+    taskDescription: string;
+    priority: string;
+    deadline: string;
+    // taskStatus: string;
+    createdAt: string;
+  };
+
+  const [btnLabel, setBtnLabel] = useState("To do");
+  // const handlePress = () => {
+  //   setBtnLabel((prevText) => (prevText === "To do" ? "In Progress" : "Done"));
+  // };
+
+  const labels = ["To do", "In Progress", "Done"];
+
+  const handlePress = () => {
+    setBtnLabel((prevText) => {
+      const currentIndex = labels.indexOf(prevText);
+      const nextIndex = (currentIndex + 1) % labels.length;
+      return labels[nextIndex];
+    });
+  };
+
+  const taskId = params.id;
+  const [task, setTask] = useState<Task>();
+  useEffect(() => {
+    const fetchTask = async () => {
+      if (taskId) {
+        try {
+          const response = await api.get(`/tasks/${taskId}`);
+          // console.log(response.data);
+
+          setTask(response.data);
+        } catch (error) {
+          console.error("Error fetching task:", error);
+        }
+      }
+    };
+    fetchTask();
+  }, [taskId]);
+
   return (
-    <View style={taskDetailScreenStyles.container}>
+    <View style={taskDetailStyles.container}>
       <View>
-        <View style={taskDetailScreenStyles.taskLabel}>
-          <Text style={taskDetailScreenStyles.taskTitle}>
-            Wiring Dashboard Analytics
-          </Text>
-          <TouchableOpacity>
-            <Text style={taskDetailScreenStyles.taskTag}>In Progress</Text>
+        <View style={taskDetailStyles.taskLabel}>
+          <Text style={taskDetailStyles.taskTitle}>{task?.taskName}</Text>
+          <TouchableOpacity onPress={handlePress}>
+            <Text style={taskDetailStyles.taskTag}>{btnLabel}</Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={taskDetailScreenStyles.dateCreated}>
-          Created 27/11/2024
+        <Text style={taskDetailStyles.dateCreated}>
+          Created {task?.createdAt}
         </Text>
       </View>
-      <View style={taskDetailScreenStyles.descriptionBlock}>
-        <Text style={taskDetailScreenStyles.descriptionLabel}>Description</Text>
-        <Text style={taskDetailScreenStyles.descriptionContent}>
-          Create on boarding page based on pic, pixel perfect, with the user
-          story of i want to know what kind of apps is this so i need to view
-          onboarding screen to leverage my knowledge so that i know what kind of
-          apps is this
+      <View style={taskDetailStyles.descBlock}>
+        <Text style={taskDetailStyles.descLabel}>Description</Text>
+        <Text style={taskDetailStyles.descContent}>
+          {task?.taskDescription}
         </Text>
       </View>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View style={{ gap: 4 }}>
-          <Text style={taskDetailScreenStyles.descriptionLabel}>Priority</Text>
-          <Text style={taskDetailScreenStyles.taskTag}>High</Text>
+          <Text style={taskDetailStyles.descLabel}>Priority</Text>
+          <Text style={taskDetailStyles.taskTag}>{task?.priority}</Text>
         </View>
         <View style={{ gap: 4 }}>
-          <Text style={taskDetailScreenStyles.descriptionLabel}>Deadline</Text>
+          <Text style={taskDetailStyles.descLabel}>Deadline</Text>
           <View>
             {/* <CalendarFillIcon width={16} height={16} color="#D0D5DD" /> */}
-            <Text style={taskDetailScreenStyles.textDeadline}>01/12/2024</Text>
+            <Text style={taskDetailStyles.textDeadline}>{task?.deadline}</Text>
           </View>
         </View>
       </View>
@@ -47,7 +89,7 @@ const TaskDetailScreen = () => {
 
 export default TaskDetailScreen;
 
-const taskDetailScreenStyles = StyleSheet.create({
+const taskDetailStyles = StyleSheet.create({
   container: {
     marginTop: 12,
     marginBottom: 16,
@@ -85,7 +127,7 @@ const taskDetailScreenStyles = StyleSheet.create({
     fontWeight: "500",
     color: "#475467",
   },
-  descriptionBlock: {
+  descBlock: {
     padding: 12,
     gap: 4,
     borderRadius: 8,
@@ -93,11 +135,11 @@ const taskDetailScreenStyles = StyleSheet.create({
     borderColor: "#EAECF0",
   },
 
-  descriptionLabel: {
+  descLabel: {
     fontSize: 14,
     fontWeight: "500",
   },
-  descriptionContent: {
+  descContent: {
     fontSize: 14,
     fontWeight: "400",
     color: "#475467",
