@@ -1,157 +1,308 @@
-import CreateTaskButton from '@/components/btn-create-task';
-import ActionButtons from '@/components/btn-optiton';
-import { router } from 'expo-router';
-import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { BarChart } from 'react-native-chart-kit';
+import { useState, useEffect, useCallback } from "react";
+import api from "@/api";
+import CreateTaskButton from "@/components/btn-create-task";
+import ActionButtons from "@/components/btn-optiton";
+import { router, useRouter } from "expo-router";
+import { Dimensions, FlatList, ScrollView, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity } from "react-native";
+import { BarChart } from "react-native-chart-kit";
 
 const screenWidth = Dimensions.get("window").width;
 
 interface Tag {
   title: string;
-  value: number;
 }
 
-interface Project {
-  id: number;
-  name: string;
-  progress: number;
-  taskCount: number;
-  deadline: string;
+interface Team {
+  _id: string;
+  teamName: string;
+  members: any[];
+  createdAt: string;
 }
 
 interface Task {
-  id: number;
-  name: string;
-  project: string;
+  _id: string;
+  taskName: string;
+  taskDescription: string;
   priority: string;
+  taskStatus: string;
   deadline: string;
+  createdBy: {
+    userId: string;
+    username: string;
+  };
+  assignTo: any[];
+  teams: {
+    teamId: string;
+    teamName: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 const tags: Tag[] = [
-  { title: "All", value: 8 },
-  { title: "To do", value: 5 },
-  { title: "In progress", value: 2 },
-  { title: "Done", value: 1 },
+  { title: "To do"},
+  { title: "In progress"},
+  { title: "Done"},
 ];
 
-const data = {
-  labels: ['Low', 'Medium', 'High'],
-  datasets: [
-    {
-      data: [5, 2, 1],
-    },
-  ],
+interface Priority {
+  title: string;
+}
+
+const priorities: Priority[] = [
+  { title: "Low"},
+  { title: "Medium"},
+  { title: "High"},
+];
+
+const handleGetTeams = async () => {
+  try {
+    const response = await api.get("/teams");
+    return response.data || []; // Trả về mảng rỗng nếu không có dữ liệu
+  } catch (error) {
+    console.error("Fetch teams error", error);
+    return [];
+  }
 };
 
-const projects: Project[] = [
-  { id: 1, name: "Project A", progress: 80, taskCount: 10, deadline: "2024-11-30" },
-  { id: 2, name: "Project B", progress: 50, taskCount: 5, deadline: "2024-12-05" },
-  { id: 2, name: "Project B", progress: 50, taskCount: 5, deadline: "2024-12-05" },
-];
+const handleGetTasks = async () => {
+  try {
+    const response = await api.get("/tasks");
+    console.log(response.data);
+    return response.data || []; 
+  } catch (error) {
+    console.error("Fetch tasks error", error);
+    return [];
+  }
+}
 
-const tasks: Task[] = [
-  { id: 1, name: "Task 1", project: "Project A", priority: "High", deadline: "2024-11-28" },
-  { id: 2, name: "Task 2", project: "Project B", priority: "Medium", deadline: "2024-11-29" },
-  { id: 2, name: "Task 2", project: "Project B", priority: "Medium", deadline: "2024-11-29" },
-];
+const TeamItem = ({ team }: { team: Team }) => {
+  const router = useRouter(); // Gọi hook trong component con
+  const leader = team.members.find((member) => member.role === "Leader");
+
+  const handleNavigateToTeamDetail = useCallback(() => {
+    router.push(`/(team-detail)/${team._id}`);
+  }, [router, team._id]);
+
+  const handleNavigateToUserDetail = useCallback(() => {
+    router.push(`/(user-detail)/${leader?.userId}`);
+  }, [router, team._id]);
+
+  return (
+    <View style={styles.tableRow}>
+      <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToTeamDetail}>
+        <Text style={styles.tableCell}>{team.teamName || "Unnamed Team"}</Text>
+      </TouchableOpacity>
+      <Text style={styles.tableCell}>{team.members.length || 0}</Text>
+      <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToUserDetail}>
+        <Text style={styles.tableCell}>{leader?.username || "No leader"}</Text>
+      </TouchableOpacity>
+      <Text style={styles.tableCell}>{new Date(team.createdAt).toLocaleDateString()}</Text>
+    </View>
+  );
+};
+
+const TaskItem = ({ task }: { task: Task }) => {
+  const router = useRouter();
+
+  const handleNavigateToTaskDetail = useCallback(() => {
+    router.push(`/(task-detail)/${task._id}`);
+  }, [router, task._id]);
+
+  const handleNavigateToUserDetail = useCallback(() => {
+    router.push(`/(user-detail)/${task.createdBy.userId}`);
+  }, [router, task._id]);
+
+  const handleNavigateToTeamDetail = useCallback(() => {
+    if (task.teams) {
+      router.push(`/(team-detail)/${task.teams.teamId}`);
+    }
+  }, [router, task._id]);
+
+  return (
+    <View style={styles.tableRow}>
+      <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToTaskDetail}>
+        <Text style={styles.tableCell}>{task.taskName || "Unnamed Task"}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToUserDetail}>
+      <Text style={styles.tableCell}>{task.createdBy.username || "Unname"}</Text>
+      </TouchableOpacity>
+      <Text style={styles.tableCell}>{task.assignTo.length || 0}</Text>
+      <Text style={styles.tableCell}>{task.priority || "Unknown"}</Text>
+      <Text style={styles.tableCell}>{task.taskStatus || "Unknown"}</Text>
+      <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToTeamDetail}>
+        <Text style={styles.tableCell}>{task.teams ? task.teams.teamName : "Unknown"}</Text>
+      </TouchableOpacity>
+      <Text style={styles.tableCell}>{new Date(task.createdAt).toLocaleDateString()}</Text>
+      <Text style={styles.tableCell}>{new Date(task.deadline).toLocaleDateString()}</Text>
+    </View>
+  );
+}
+
+const titleStatusCount = (tasks: Task[], tags: Tag[]) => {
+  const tagMap: { [key: string]: number } = {};
+
+  tags.forEach(tag => {
+    tagMap[tag.title] = 0;
+  });
+
+  tasks.forEach(task => {
+    if (tagMap[task.taskStatus] !== undefined) {
+      tagMap[task.taskStatus]++;
+    }
+  });
+
+  return tags.map(tag => ({
+    ...tag,
+    count: tagMap[tag.title],
+  }));
+};
+
+const titlePriorityCount = (tasks: Task[], priorities: Priority[]) => {
+  const priorityMap: { [key: string]: number } = {};
+
+  priorities.forEach(priority => {
+    priorityMap[priority.title] = 0;
+  });
+
+  tasks.forEach(task => {
+    if (priorityMap[task.priority] !== undefined) {
+      priorityMap[task.priority]++;
+    }
+  });
+
+  return priorities.map(priority => ({
+    ...priority,
+    count: priorityMap[priority.title],
+  }));
+};
+
+const CurrentTask = ({ tasks }: { tasks: Task[] }) => {
+  const updatedTags = titleStatusCount(tasks, tags);
+  const updatedPriorities = titlePriorityCount(tasks, priorities);
+  const data = {
+    labels: updatedPriorities.map(priority => priority.title),
+    datasets: [
+      {
+        data: updatedPriorities.map(priority => priority.count || 0),
+      },
+    ],
+  };
+
+  return (
+    <><View style={styles.section}>
+      <Text style={styles.sectionTitle}>Summary of Work</Text>
+      <Text style={styles.sectionSubtitle}>Current task progress</Text>
+      <View style={styles.tagsContainer}>
+        {updatedTags.map((tag, index) => (
+          <View key={index} style={styles.tag}>
+            <Text style={styles.tagTitle}>{tag.title}</Text>
+            <Text style={styles.tagValue}>{tag.count}</Text>
+          </View>
+        ))}
+      </View>
+    </View><View style={styles.section}>
+        <Text style={styles.sectionTitle}>Task Priorities</Text>
+        <Text style={styles.sectionSubtitle}>Current task priorities</Text>
+        <BarChart
+          data={data}
+          width={screenWidth - 32}
+          height={220}
+          chartConfig={chartConfig}
+          verticalLabelRotation={0}
+          fromZero
+          showBarTops={false}
+          yAxisLabel=""
+          yAxisSuffix="" />
+</View></>
+    
+  );
+};
 
 const DashboardScreen = () => {
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const data1 = await handleGetTeams();
+        const data2 = await handleGetTasks();
+        setTeams(data1);
+        setTasks(data2);
+      } catch (err) {
+        setError("Failed to fetch");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+
+  const renderTeamItem = ({ item }: { item: Team }) => <TeamItem team={item} />;
+  const renderTaskItem = ({ item }: { item: Task }) => <TaskItem task={item} />;
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.screen}>
       <ScrollView>
         <View style={styles.container}>
-          <View style={progressSummaryStyles.container}>
-            <Text style={progressSummaryStyles.textTitle}>
-              Summary of Work
-            </Text>
-            <Text style={progressSummaryStyles.textDescription}>
-              Current task progress
-            </Text>
-            <View style={progressSummaryStyles.tagsStyles}>
-              {tags.map((tag, index) => (
-                <View key={index} style={progressSummaryStyles.tagItem}>
-                  <Text style={progressSummaryStyles.tagTitle}>
-                    {tag.title}
-                  </Text>
-                  <Text style={progressSummaryStyles.tagValue}>
-                    {tag.value}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-          <View style={progressSummaryStyles.container}>
-            <Text style={progressSummaryStyles.textTitle}>Task Priorities</Text>
-            <Text style={progressSummaryStyles.textDescription}>
-              Current task priorities
-            </Text>
-            <BarChart
-              data={data}
-              width={screenWidth - 50} 
-              height={220}
-              chartConfig={chartConfig}
-              verticalLabelRotation={0}
-              fromZero
-              showBarTops={false}
-              yAxisLabel=""
-              yAxisSuffix=""
-            />
-          </View>
+          <CurrentTask tasks={tasks} />
+
+          {/* Teams Section */}
           <View style={wrapContainerStyles.container}>
-            {/* Projects Near Deadline - Table */}
-            <View style={wrapContainerStyles.containerItem}>
-              <Text style={progressSummaryStyles.textTitle}>Projects Near Deadline</Text>
-              <View style={tableStyles.table}>
-                <View style={tableStyles.tableRow}>
-                  <Text style={tableStyles.tableHeader}>Project Name</Text>
-                  <Text style={tableStyles.tableHeader}>Progress</Text>
-                  <Text style={tableStyles.tableHeader}>Tasks</Text>
-                  <Text style={tableStyles.tableHeader}>Deadline</Text>
-                  <Text style={tableStyles.tableHeader}>Option</Text>
+            {/* Team Table */}
+            <View style={wrapContainerStyles.containerItem}>   
+              <Text style={styles.sectionTitle}>Teams</Text>
+              <View style={styles.table}>
+                <View style={styles.tableRow}>
+                  <Text style={styles.tableHeader}>Team Name</Text>
+                  <Text style={styles.tableHeader}>Members</Text>
+                  <Text style={styles.tableHeader}>Leader</Text>
+                  <Text style={styles.tableHeader}>Created At</Text>
                 </View>
-                {projects.map((project) => (
-                  <View key={project.id} style={tableStyles.tableRow}>
-                    <Text style={tableStyles.tableCell}>{project.name}</Text>
-                    <Text style={tableStyles.tableCell}>{project.progress}%</Text>
-                    <Text style={tableStyles.tableCell}>{project.taskCount}</Text>
-                    <Text style={tableStyles.tableCell}>{project.deadline}</Text>
-                    <View style={tableStyles.tableCell}>
-                      <ActionButtons
-                        onEdit={() => router.push('/create-project')}
-                        onDelete={() => console.log(`Delete project ${project.id}`)}
-                      />
-                    </View>
-                  </View>
-                ))}
+                {isLoading ? (
+                  <ActivityIndicator size="small" color="#0000ff" />
+                ) : (
+                  <FlatList
+                    data={teams}
+                    renderItem={renderTeamItem}
+                    keyExtractor={(item) => item._id.toString()}
+                  />
+                )}
               </View>
             </View>
 
-            {/* Tasks Near Deadline - Table */}
-            <View style={wrapContainerStyles.containerItem}>
-              <Text style={progressSummaryStyles.textTitle}>Tasks Near Deadline</Text>
-              <View style={tableStyles.table}>
-                <View style={tableStyles.tableRow}>
-                  <Text style={tableStyles.tableHeader}>Task Name</Text>
-                  <Text style={tableStyles.tableHeader}>Project</Text>
-                  <Text style={tableStyles.tableHeader}>Priority</Text>
-                  <Text style={tableStyles.tableHeader}>Deadline</Text>
-                  <Text style={tableStyles.tableHeader}>Option</Text>
+          {/* Tasks Section */}
+          <View style={wrapContainerStyles.containerItem}>              
+              <Text style={styles.sectionTitle}>Tasks Near Deadline</Text>
+              <View style={styles.table}>
+                <View style={styles.tableRow}>
+                  <Text style={styles.tableHeader}>Task Name</Text>
+                  <Text style={styles.tableHeader}>Created By</Text>
+                  <Text style={styles.tableHeader}>Assign To</Text>
+                  <Text style={styles.tableHeader}>Priority</Text>
+                  <Text style={styles.tableHeader}>Status</Text>
+                  <Text style={styles.tableHeader}>Team</Text>
+                  <Text style={styles.tableHeader}>Created At</Text>
+                  <Text style={styles.tableHeader}>Deadline</Text>
                 </View>
-                {tasks.map((task) => (
-                  <View key={task.id} style={tableStyles.tableRow}>
-                    <Text style={tableStyles.tableCell}>{task.name}</Text>
-                    <Text style={tableStyles.tableCell}>{task.project}</Text>
-                    <Text style={tableStyles.tableCell}>{task.priority}</Text>
-                    <Text style={tableStyles.tableCell}>{task.deadline}</Text>
-                    <View style={tableStyles.tableCell}>
-                      <ActionButtons
-                        onEdit={() => router.push('/create-task')}
-                        onDelete={() => console.log(`Delete task ${task.id}`)}
-                      />
-                    </View>
-                  </View>
-                ))}
-              </View>
+                {isLoading ? (
+                  <ActivityIndicator size="small" color="#0000ff" />
+                ) : (
+                  <FlatList
+                    data={tasks}
+                    renderItem={renderTaskItem}
+                    keyExtractor={(item) => item._id.toString()}
+                  />
+                )}
+              </View>  
             </View>
           </View>
         </View>
@@ -163,43 +314,47 @@ const DashboardScreen = () => {
 export default DashboardScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: "column",
-    gap: 16,
-    marginVertical: 16,
-    marginHorizontal: 12,
+  screen: {
+    flex: 1,
+    backgroundColor: "#F5F5F5",
   },
-});
-
-const progressSummaryStyles = StyleSheet.create({
   container: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    padding: 16,
+  },
+  section: {
     backgroundColor: "white",
     borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  textTitle: {
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  sectionSubtitle: {
     fontSize: 14,
-    fontWeight: "600",
+    color: "#666",
+    marginBottom: 12,
   },
-  textDescription: {
-    fontSize: 12,
-    fontWeight: "400",
-  },
-  tagsStyles: {
+  tagsContainer: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
-    marginTop: 12,
   },
-  tagItem: {
+  tag: {
     flex: 1,
-    flexDirection: "column",
-    gap: 8,
-    padding: 12,
     backgroundColor: "#F9F9F9",
+    padding: 12,
     borderRadius: 8,
-    borderColor: "#EBECEE",
     borderWidth: 1,
+    borderColor: "#EBECEE",
+    alignItems: "center",
   },
   tagTitle: {
     fontSize: 12,
@@ -207,13 +362,10 @@ const progressSummaryStyles = StyleSheet.create({
     color: "#475467",
   },
   tagValue: {
-    fontSize: 20,
-    fontWeight: "400",
+    fontSize: 18,
+    fontWeight: "bold",
     color: "#101828",
   },
-});
-
-const tableStyles = StyleSheet.create({
   table: {
     marginTop: 12,
     borderWidth: 1,
@@ -231,12 +383,13 @@ const tableStyles = StyleSheet.create({
     fontWeight: "600",
     color: "#475467",
     flex: 1,
+    textAlign: "center",
   },
   tableCell: {
     fontSize: 12,
-    fontWeight: "400",
     color: "#101828",
     flex: 1,
+    textAlign: "center",
   },
 });
 
@@ -244,25 +397,31 @@ const chartConfig = {
   backgroundGradientFrom: "#ffffff",
   backgroundGradientTo: "#ffffff",
   color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
-  barPercentage: 2,
+  barPercentage: 1.5,
 };
+
 
 const wrapContainerStyles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    flexWrap: "wrap", 
-    justifyContent: "space-around", 
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     gap: 12,
+    paddingHorizontal: 16,
   },
-
   containerItem: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     backgroundColor: "white",
     borderRadius: 8,
     flexBasis: "48%",
-    maxWidth: "48%",  
-    minWidth: 400,
-    marginBottom: 12, 
+    maxWidth: "48%",
+    minWidth: 180,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 1,
   },
 });

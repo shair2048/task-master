@@ -1,116 +1,126 @@
 import ActionButtons from "@/components/btn-optiton";
-import React, { useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { StyleSheet, Text, View, FlatList, ScrollView, useWindowDimensions, TouchableOpacity } from "react-native";
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
+import api from "@/api";
 
-const teams = [
-  {
-    id: "1",
-    name: "First team",
-    progress: 33,
-    members: 3,
-    tasks: 3,
-    startDate: "2024-11-01",
-    endDate: "2024-11-30",
-  },
-  {
-    id: "2",
-    name: "Second team",
-    progress: 75,
-    members: 3,
-    tasks: 10,
-    startDate: "2024-12-01",
-    endDate: "2024-12-15",
-  },
-  {
-    id: "3",
-    name: "Third team",
-    progress: 50,
-    members: 7,
-    tasks: 5,
-    startDate: "2024-11-15",
-    endDate: "2024-12-10",
-  },
-  {
-    id: "4",
-    name: "Fourth team",
-    progress: 20,
-    members: 4,
-    tasks: 6,
-    startDate: "2024-12-01",
-    endDate: "2024-12-20",
-  },
-];
+// Hàm lấy dữ liệu từ API
+const handleGetTeams = async () => {
+  try {
+    const response = await api.get("/teams");
+    return response.data || []; // Trả về mảng rỗng nếu không có dữ liệu
+  } catch (error) {
+    console.error("Fetch teams error", error);
+    return [];
+  }
+};
 
-interface Team {
-  id: string;
-  name: string;
-  progress: number;
-  members: number;
-  tasks: number;
-  startDate: string;
-  endDate: string;
+// Thành phần hiển thị từng dòng dữ liệu team
+interface Teams {
+  _id: string;
+  teamName: string;
+  members: any[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-const TeamRow = ({ team }: { team: Team }) => {
-  const router = useRouter(); // Khởi tạo useRouter
+const TeamRow = ({team}: { team: Teams}) => {
+  const router = useRouter();
 
-  const handleEdit = () => {
-    router.push(`/create-team`); 
-  };
+  const leader = team.members.find((member) => member.role === "Leader");
+  
+    const handleNavigateToTeamDetail = useCallback(() => {
+      router.push(`/(team-detail)/${team._id}`);
+    }, [router, team._id]);
 
-  const handleDelete = () => {
-    console.log(`Delete team ${team.name}`);
-  };
-
-  const handleNavigateToDetail = () => {
-    // Điều hướng tới trang chi tiết dự án
-    router.push(`/(team-detail)/${team.id}` as any);
-  };
+    const handleNavigateToUserDetail = useCallback(() => {
+      router.push(`/(user-detail)/${leader?.userId}`);
+    }, [router, team._id]);
 
   return (
     <View style={styles.row}>
-      <TouchableOpacity style={styles.cell} onPress={handleNavigateToDetail}>
-        <Text style={styles.cell}>{team.name}</Text>
+      <TouchableOpacity style={styles.cell} onPress={handleNavigateToTeamDetail}>
+        <Text style={styles.cell}>{team.teamName || "Unnamed Team"}</Text>
       </TouchableOpacity>
-      <Text style={styles.cell}>{team.progress}%</Text>
-      <Text style={styles.cell}>{team.members}</Text>
-      <Text style={styles.cell}>{team.tasks}</Text>
-      <Text style={styles.cell}>{team.startDate}</Text>
-      <Text style={styles.cell}>{team.endDate}</Text>
-      <View style={styles.cell}>
-        <ActionButtons onEdit={handleEdit} onDelete={handleDelete} />
-      </View>
+      <Text style={styles.cell}>{team.members.length || 0}</Text>
+      <TouchableOpacity style={styles.cell} onPress={handleNavigateToUserDetail}>
+        <Text style={styles.cell}>{leader?.username || "No leader"}</Text>
+      </TouchableOpacity>
+      <Text style={styles.cell}>{new Date(team.createdAt).toLocaleDateString()}</Text>
+      <Text style={styles.cell}>{new Date(team.updatedAt).toLocaleDateString()}</Text>
     </View>
   );
 };
 
-
 const App = () => {
-  const { width } = useWindowDimensions(); // Lấy chiều rộng màn hình
-  const isSmallScreen = width < 500; // Kiểm tra nếu chiều rộng nhỏ hơn 500
+  const [teams, setTeams] = useState<Teams[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const { width } = useWindowDimensions();
+  const isSmallScreen = width < 500;
+
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        setIsLoading(true);
+        const data = await handleGetTeams();
+        setTeams(data);
+      } catch (err) {
+        setError("Failed to fetch teams");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTeams();
+  }, []);
+
+  const handleEdit = (teamId: any) => {
+    console.log(`Edit team ${teamId}`);
+  };
+
+  const handleDelete = (teamId: any) => {
+    console.log(`Delete team ${teamId}`);
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading teams...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <ScrollView horizontal={isSmallScreen}>
         <View style={styles.table}>
           {/* Header */}
-            <View style={styles.tableHeader}>
-              <Text style={styles.headerCell}>Team Name</Text>
-              <Text style={styles.headerCell}>Progress</Text>
-              <Text style={styles.headerCell}>Members</Text>
-              <Text style={styles.headerCell}>Tasks</Text>
-              <Text style={styles.headerCell}>Start Date</Text>
-              <Text style={styles.headerCell}>End Date</Text>
-              <Text style={styles.headerCell}>Actions</Text>
-            </View>
-      
-            {/* Rows */}
-            <FlatList
-              data={teams}
-              renderItem={({ item }) => <TeamRow team={item} />}
-              keyExtractor={(item) => item.id}
-            />
+          <View style={styles.tableHeader}>
+            <Text style={styles.headerCell}>Team Name</Text>
+            <Text style={styles.headerCell}>Members</Text>
+            <Text style={styles.headerCell}>Leader</Text>
+            <Text style={styles.headerCell}>Created At</Text>
+            <Text style={styles.headerCell}>Updated At</Text>
+          </View>
+
+          {/* Rows */}
+          <FlatList
+            data={teams}
+            renderItem={({ item }) => (
+              <TeamRow team={item}/>
+            )}
+            keyExtractor={(item) => item._id.toString()} // Đảm bảo key là string
+          />
         </View>
       </ScrollView>
     </View>
@@ -159,6 +169,24 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 14,
     color: "#2d3748",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 18,
+    color: "#2d3748",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 18,
+    color: "red",
   },
 });
 
