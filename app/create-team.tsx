@@ -1,3 +1,5 @@
+import CreateTaskButton from "@/components/btn-create-task";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   View,
@@ -7,116 +9,54 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import DropDownPicker from "react-native-dropdown-picker";
 
 const CreateTeamScreen = () => {
-  const [team, setTeam] = useState({
-    id: "",
-    name: "",
-    description: "",
-    progress: "",
-    members: "",
-    tasks: "",
-    startDate: "",
-    endDate: "",
-  });
+  const router = useRouter();
 
-  const handleInputChange = (field: keyof typeof team, value: string) => {
-    setTeam((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(null);
+  const [items, setItems] = useState([
+    { label: "Member 1", value: "en" },
+    { label: "Member 2", value: "de" },
+    { label: "Member 3", value: "fr" },
+  ]);
+
+  const handlePress = async () => {
+    router.push("/(tabs)/(teams)");
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View>
-        <Text style={styles.label}>Team ID</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Team ID"
-          value={team.id}
-          onChangeText={(value) => handleInputChange("id", value)}
-        />
-      </View>
+    <View>
+      <View style={styles.container}>
+        <View>
+          <Text style={styles.title}>Team Name</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Enter Team Name"
+            placeholderTextColor="#98A2B3"
+            // onChangeText={setTaskName}
+          />
+        </View>
 
-      <View>
-        <Text style={styles.label}>Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Team Name"
-          value={team.name}
-          onChangeText={(value) => handleInputChange("name", value)}
-        />
-      </View>
+        <View style={{ zIndex: 2 }}>
+          <Text style={styles.title}>Members</Text>
 
-      <View>
-        <Text style={styles.label}>Description</Text>
-        <TextInput
-          style={[styles.input, styles.textarea]}
-          placeholder="Enter Team Description"
-          value={team.description}
-          multiline={true}
-          onChangeText={(value) => handleInputChange("description", value)}
-        />
+          <DropDownPicker
+            open={open}
+            value={value}
+            items={items}
+            setOpen={setOpen}
+            setValue={setValue}
+            setItems={setItems}
+            placeholder="Select Member"
+            style={btnStyles.container}
+            dropDownDirection="BOTTOM"
+          />
+        </View>
       </View>
-
-      <View>
-        <Text style={styles.label}>Progress (%)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Progress (0-100)"
-          value={team.progress}
-          keyboardType="numeric"
-          onChangeText={(value) => handleInputChange("progress", value)}
-        />
-      </View>
-
-      <View>
-        <Text style={styles.label}>Members</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Number of Members"
-          value={team.members}
-          keyboardType="numeric"
-          onChangeText={(value) => handleInputChange("members", value)}
-        />
-      </View>
-
-      <View>
-        <Text style={styles.label}>Tasks</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Number of Tasks"
-          value={team.tasks}
-          keyboardType="numeric"
-          onChangeText={(value) => handleInputChange("tasks", value)}
-        />
-      </View>
-
-      <View>
-        <Text style={styles.label}>Start Date</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="YYYY-MM-DD"
-          value={team.startDate}
-          onChangeText={(value) => handleInputChange("startDate", value)}
-        />
-      </View>
-
-      <View>
-        <Text style={styles.label}>End Date</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="YYYY-MM-DD"
-          value={team.endDate}
-          onChangeText={(value) => handleInputChange("endDate", value)}
-        />
-      </View>
-
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Submit</Text>
-      </TouchableOpacity>
-    </ScrollView>
+      <CreateTaskButton label="Create Task" onChangePress={handlePress} />
+    </View>
   );
 };
 
@@ -124,42 +64,46 @@ export default CreateTeamScreen;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: "#F9FAFB",
+    flexDirection: "column",
+    marginVertical: 16,
+    marginHorizontal: 12,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    gap: 16,
+    backgroundColor: "white",
+    borderRadius: 8,
   },
-  header: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  label: {
-    fontSize: 14,
+  title: {
+    fontSize: 12,
+    fontWeight: "400",
     color: "#475467",
     marginBottom: 4,
   },
-  input: {
+  textInput: {
     height: 44,
     padding: 12,
-    borderWidth: 1,
-    borderColor: "#CBD5E1",
-    borderRadius: 8,
-    marginBottom: 16,
     backgroundColor: "white",
-  },
-  textarea: {
-    height: 80,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#98A2B3",
+    // height: 200,
     textAlignVertical: "top",
   },
-  button: {
-    backgroundColor: "#4F46E5",
-    padding: 16,
+});
+
+const btnStyles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 12,
+    height: 44,
     borderRadius: 8,
-    alignItems: "center",
+    borderColor: "#98A2B3",
+    borderWidth: 1,
   },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
+  btnTitle: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#101828",
   },
 });

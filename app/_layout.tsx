@@ -190,7 +190,7 @@ export default function RootLayout() {
         options={{
           header: () => (
             <SafeAreaView>
-              <CustomHeader title="Project Info" />
+              <CustomHeader title="Create Team" />
             </SafeAreaView>
           ),
         }}

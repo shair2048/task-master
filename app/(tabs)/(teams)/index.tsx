@@ -1,6 +1,7 @@
 import CreateTaskButton from "@/components/btn-create-task";
 import WorkspaceItems from "@/components/workspace-items";
-import { Link } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Link, useRouter } from "expo-router";
 import {
   Image,
   StyleSheet,
@@ -11,6 +12,12 @@ import {
 } from "react-native";
 
 const TeamsScreen = () => {
+  const router = useRouter();
+
+  const handlePress = async () => {
+    router.push("/create-team");
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollView>
@@ -32,7 +39,7 @@ const TeamsScreen = () => {
         </View>
       </ScrollView>
 
-      <CreateTaskButton label="New Team" onChangePress={() => {}} />
+      <CreateTaskButton label="New Team" onChangePress={handlePress} />
     </View>
   );
 };
