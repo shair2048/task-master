@@ -1,20 +1,91 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect, useEffect } from "react";
 import { Text, View, StyleSheet, TouchableOpacity, FlatList, useWindowDimensions, ScrollView } from "react-native";
 import { useSearchParams } from "expo-router/build/hooks";
 import { useNavigation } from "@react-navigation/native";
 import ActionButtons from "@/components/btn-optiton";
 import BlockButton from "@/components/btn-block";
 import { router } from "expo-router";
+import api from "@/api";
+import { Use } from "react-native-svg";
 
-type User = {
-  id: string;
-  name: string;
-  account_name: string;
-  date_of_birth: string;
-  phone_number: string;
-  address: string;
-  s_role: string;
+interface Account {
+  _id: string;
+  username: string;
+  email: string;
+  role: string;
+  teams: any[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+const handleGetAccountById = async (id: string) => {
+  try {
+    const response = await api.get(`/account/${id}`);
+    return response.data || [];
+  } catch (error) {
+    console.error("Fetch accounts error", error);
+    return [];
+  }
+}
+
+const UserCard = ({ user }: { user: Account }) => {
+  const handleEdit = () => {
+    router.push(`/create-user`);
+  };
+
+  const handleDelete = () => {
+    console.log(`Delete user ${user.username}`);
+  };
+
+  const handleBlock = () => {
+    console.log(`Block user ${user.username}`);
+  };
+
+  return (
+      <View style={styles.card}>
+        <View style={UserStyles.header}>
+          <View style={{ flex: 1 }}>
+            <Text style={UserStyles.title}>{user.username}</Text>
+            <Text style={UserStyles.description}>{user.email}</Text>
+          </View>
+          <ActionButtons onEdit={handleEdit} onDelete={handleDelete} />
+          <BlockButton onBlock={handleBlock} />
+        </View>
+
+        <View style={UserStyles.body}>
+          <Text style={styles.userDetails}>Role: {user.role}</Text>
+          <Text style={styles.userDetails}>
+            Teams: {user.teams?.length > 0 ? user.teams.join(", ") : "None"}
+          </Text>
+          <Text style={styles.userDetails}>
+            Created at: {new Date(user.createdAt).toLocaleDateString()}
+          </Text>
+          <Text style={styles.userDetails}>
+            Updated at: {new Date(user.updatedAt).toLocaleDateString()}
+          </Text>
+        </View>
+
+        <View style={styles.footer}>
+          <Text style={styles.taskCount}>{user.teams.length} Teams, {} Task</Text>
+        </View>
+      </View>
+  );
 };
+
+const UserView = ({ user }: { user: Account }) => {
+  return (
+    <View style={UserStyles.card}>
+      <UserCard user={user} />
+      <View style={TabsStyles.container}> 
+        <View style={TabsStyles.tabItem}>
+          <Text style={TabsStyles.tabTitle}>Teams</Text>
+        </View>
+      </View>
+      <ProjectList userId={user._id} />
+    </View>
+  );
+};
+
 
 type Project = {
   id: string;
@@ -40,14 +111,9 @@ type Task = {
   endDate: string;
 };
 
-const users: User[] = [
-  { id: "1", name: "John Doe", account_name: "johndoe", date_of_birth: "1990-01-15", phone_number: "123456789", address: "123 Main St, City", s_role: "User" },
-  { id: "2", name: "Jane Smith", account_name: "janesmith", date_of_birth: "1995-05-20", phone_number: "987654321", address: "456 Elm St, City", s_role: "User" },
-];
-
 const projects: Project[] = [
-  { id: "1", id_user: "1", name: "First Project", description: "Details about your project", progress: 33, members: 3, tasks: 3, startDate: "2024-11-01", endDate: "2024-11-30" },
-  { id: "2", id_user: "1", name: "Second Project", description: "More details about this project", progress: 75, members: 6, tasks: 10, startDate: "2024-12-01", endDate: "2024-12-15" },
+  { id: "1", id_user: "675918e6de74dc7dfc6fc53a", name: "First Project", description: "Details about your project", progress: 33, members: 3, tasks: 3, startDate: "2024-11-01", endDate: "2024-11-30" },
+  { id: "2", id_user: "675918e6de74dc7dfc6fc53a", name: "Second Project", description: "More details about this project", progress: 75, members: 6, tasks: 10, startDate: "2024-12-01", endDate: "2024-12-15" },
 ];
 
 const tasks: Task[] = [
@@ -134,74 +200,28 @@ const ProjectList = ({ userId }: { userId: string }) => {
   );
 };
 
-const ProjectCard = ({ user, id }: { user: User, id: string }) => {
-  const handleEdit = () => {
-    router.push(`/create-user`);
-  };
-
-  const handleDelete = () => {
-    console.log(`Delete project ${user.name}`);
-  };
-
-  const handleBlock = () => {
-    console.log(`Block user ${user.name}`);
-  }
-
-  return (
-    <View style={UserStyles.card}>
-      {/* Header */}
-      <View style={styles.card}>
-        <View style={UserStyles.header}>
-          <View style={{ flex: 1 }}>
-            <Text style={UserStyles.title}>{user.name}</Text>
-            <Text style={UserStyles.description}>{user.account_name}</Text>
-          </View>
-          <ActionButtons onEdit={handleEdit} onDelete={handleDelete} />
-          <BlockButton onBlock={handleBlock} />
-        </View>
-
-        {/* Body */}
-        <View style={UserStyles.body}>
-          <Text style={styles.userDetails}>DOB: {user.date_of_birth}</Text>
-          <Text style={styles.userDetails}>Phone: {user.phone_number}</Text>
-          <Text style={styles.userDetails}>Address: {user.address}</Text>
-          <Text style={styles.userDetails}>Role: {user.s_role}</Text>
-        </View>
-
-        {/* Footer */}
-        <View style={UserStyles.footer}>
-          <Text style={UserStyles.taskCount}> Projects, Tasks</Text>
-        </View>
-      </View>
-      <View style={TabsStyles.container}> 
-        <View style={TabsStyles.tabItem}>
-          <Text style={TabsStyles.tabTitle}>Projects</Text>
-        </View>
-      </View>
-      <ProjectList userId={id} />
-    </View>
-  );
-};
-
 const UserDetail = () => {
   const searchParams = useSearchParams();
-  const id = searchParams.get("id") || "";
-  const user = users.find((u) => u.id === id);
+  const id = searchParams.get("id") || ""; // Lấy ID từ URL
+  const [user, setUser] = useState<Account | null>(null);
 
-  const navigation = useNavigation();
-  useLayoutEffect(() => {
-    if (user) {
-      navigation.setOptions({ title: user.name });
+  useEffect(() => {
+    if (id) {
+      handleGetAccountById(id).then(setUser); // Gọi API để lấy thông tin người dùng theo ID
     }
-  }, [user, navigation]);
+  }, [id]);
 
   if (!user) {
-    return <Text>User not found!</Text>;
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>User not found or loading failed.</Text>
+      </View>
+    );
   }
 
   return (
     <ScrollView style={styles.container}>
-      <ProjectCard user={user} id={id} />
+      <UserView user={user} />
     </ScrollView>
   );
 };
@@ -216,6 +236,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 8,
     padding: 10,
+    marginVertical: 10,
     marginBottom: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -231,6 +252,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#555",
     marginBottom: 5,
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
+    textAlign: "center",
+    marginTop: 20,
+  },
+  taskCount: {
+    fontSize: 14,
+    color: "green",
+    fontWeight: "bold",
+  },
+  dateRange: {
+    fontSize: 12,
+    color: "#555",
   },
   projectHeader: {
     paddingVertical: 10,
@@ -258,6 +294,15 @@ const styles = StyleSheet.create({
   taskCell: {
     fontSize: 14,
     color: "#333",
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    paddingTop: 10,
+    marginTop: 10,
   },
 });
 

@@ -4,12 +4,14 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import React, { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import BtnAuth from "@/components/btn-auth";
 import TxtField from "@/components/txt-field";
 import api from "../../api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // interface FieldLabels {
 //   label: string;
@@ -36,18 +38,59 @@ const SignInScreen = () => {
     }
 
     try {
-      await api.post("/login", {
+      const response = await api.post("/login", {
         email,
         password,
       });
-      // const token = response.data.token;
+      const token = response.data.token;
+      const uid = response.data.uid;
+      const role = response.data.role;
+      // console.log(role);
 
-      // if (!token) {
-      //   setError("Login failed: No token received");
+      if (!token) {
+        setError("Login failed: No token received");
+        return;
+      }
+
+      // if (Platform.OS === "web" && role === "Admin") {
+      //   router.push("/(admin)");
       //   return;
       // }
 
-      router.push("/(tabs)");
+      // if (Platform.OS === "android") {
+      //   if (role === "Admin") {
+      //     setError("Admin accounts are not allowed to log in on the app.");
+      //     return;
+      //   }
+
+      //   await AsyncStorage.setItem("authToken", token);
+      //   await AsyncStorage.setItem("userId", uid);
+
+      //   router.push("/(tabs)");
+      // }
+
+      switch (Platform.OS) {
+        case "web":
+          if (role === "Individual") {
+            setMessage("Login failed");
+            return;
+          }
+          router.push("/(admin)");
+          break;
+
+        case "android":
+          if (role === "Admin") {
+            setMessage("Login failed");
+            return;
+          }
+          await AsyncStorage.setItem("authToken", token);
+          await AsyncStorage.setItem("userId", uid);
+          router.push("/(tabs)");
+          break;
+
+        default:
+          break;
+      }
     } catch (err) {
       setError("Login failed");
     }

@@ -1,74 +1,78 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Text, View, StyleSheet, TouchableOpacity, FlatList, useWindowDimensions, ScrollView } from "react-native";
 import { router, SearchParams } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import { useSearchParams } from "expo-router/build/hooks";
 import ActionButtons from "@/components/btn-optiton";
+import api from "@/api";
 
 
-type Team = {
-  id: string;
-  name: string;
-  description: string;
-  progress: number;
-  members: number;
-  tasks: number;
-  startDate: string;
-  endDate: string;
+interface Team {
+  _id: string;
+  teamName: string;
+  members: any[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+const handleGetTeamById = async (id: string) => {
+  try {
+    const response = await api.get(`/teams/${id}`);
+    return response.data || [];
+  } catch (error) {
+    console.error("Fetch accounts error", error);
+    return [];
+  }
+}
+
+const TeamCard = ({ team }: { team: Team }) => {
+  const leader = team.members.find((member) => member.role === "Leader");
+  const member = team.members.map(member => member.username);
+  const handleEdit = () => {
+    console.log(`Edit team ${team.teamName}`);
+  };
+
+  const handleDelete = () => {
+    console.log(`Delete team ${team.teamName}`);
+  };
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.header}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.title}>{team.teamName}</Text>
+        </View>
+        <ActionButtons onEdit={handleEdit} onDelete={handleDelete} />
+      </View>
+
+      <View style={styles.body}>
+      <Text style={styles.userDetails}>{leader?.username || "No leader"}</Text>
+        <Text style={styles.userDetails}>
+          Members: {team.members.length > 0? member.join(", "): "None"}
+        </Text>
+        <Text style={styles.userDetails}>
+          Created at: {new Date(team.createdAt).toLocaleDateString()}
+        </Text>
+        <Text style={styles.userDetails}>
+          Updated at: {new Date(team.updatedAt).toLocaleDateString()}
+        </Text>
+      </View>
+
+      <View style={styles.footer}>
+      <Text style={styles.taskCount}>{} Tasks, {team.members.length} Members </Text>
+      </View>
+    </View>
+  );
 };
 
-const teams = [
-  {
-    id: "1",
-    name: "First team",
-    description: "Here you can say more details about your team or your team.",
-    progress: 33,
-    members: 3,
-    tasks: 3,
-    startDate: "2024-11-01",
-    endDate: "2024-11-30",
-  },
-  {
-    id: "2",
-    name: "Second team",
-    description: "This is details of your team.",
-    progress: 75,
-    members: 6,
-    tasks: 10,
-    startDate: "2024-12-01",
-    endDate: "2024-12-15",
-  },
-  {
-    id: "3",
-    name: "Second team",
-    description: "This is details of your team.",
-    progress: 75,
-    members: 5,
-    tasks: 10,
-    startDate: "2024-12-01",
-    endDate: "2024-12-15",
-  },
-  {
-    id: "4",
-    name: "Second team",
-    description: "This is details of your team.",
-    progress: 75,
-    members: 4,
-    tasks: 10,
-    startDate: "2024-12-01",
-    endDate: "2024-12-15",
-  },
-  {
-    id: "5",
-    name: "Second team",
-    description: "This is details of your team.",
-    progress: 75,
-    members: 3,
-    tasks: 10,
-    startDate: "2024-12-01",
-    endDate: "2024-12-15",
-  },
-];
+const TeamView = ({ team }: { team: Team }) => {
+  return (
+    <View style={styles.card}>
+      <TeamCard team={team} />
+      <TeamTab id_team={team._id} />
+    </View>
+  );
+};
 
 const tabs: TeamTab[] = [
   { title: "Tasks" },
@@ -82,7 +86,7 @@ type TeamTab = {
 const tasks = [
   {
     id: "1",
-    id_team: "1",
+    id_team: "67597e34e46d92e2f35981d5",
     name: "Design UI",
     description: "Create user interface designs for the app",
     assignee: "John Doe",
@@ -93,7 +97,7 @@ const tasks = [
   },
   {
     id: "2",
-    id_team: "1",
+    id_team: "67597e34e46d92e2f35981d5",
     name: "Develop Backend",
     description: "Set up backend APIs",
     assignee: "Jane Smith",
@@ -104,7 +108,7 @@ const tasks = [
   },
   {
     id: "3",
-    id_team: "1",
+    id_team: "67597e34e46d92e2f35981d5",
     name: "Develop Backend",
     description: "Set up environment",
     assignee: "Reed Miles",
@@ -118,7 +122,7 @@ const tasks = [
 const members = [
   {
     id: "1",
-    id_team: "1",
+    id_team: "67597e34e46d92e2f35981d5",
     name: "John Doe",
     age: 28,
     task: "Design UI",
@@ -126,7 +130,7 @@ const members = [
   },
   {
     id: "2",
-    id_team: "1",
+    id_team: "67597e34e46d92e2f35981d5",
     name: "Jane Smith",
     age: 30,
     task: "Develop Backend",
@@ -134,7 +138,7 @@ const members = [
   },
   {
     id: "3",
-    id_team: "1",
+    id_team: "67597e34e46d92e2f35981d5",
     name: "Reed Miles",
     age: 26,
     task: "Develop Backend",
@@ -165,7 +169,6 @@ const renderTasksTable = (id_team: string) => {
         <Text style={Tablestyles.headerCell}>Priority</Text>
         <Text style={Tablestyles.headerCell}>Start Date</Text>
         <Text style={Tablestyles.headerCell}>End Date</Text>
-        <Text style={Tablestyles.headerCell}>Options</Text>
       </View>
 
       {/* Rows */}
@@ -181,9 +184,6 @@ const renderTasksTable = (id_team: string) => {
             <Text style={Tablestyles.cell}>{item.priority}</Text>
             <Text style={Tablestyles.cell}>{item.startDate}</Text>
             <Text style={Tablestyles.cell}>{item.endDate}</Text>
-            <Text style={Tablestyles.cell}>
-              <ActionButtons onEdit={handleEdit} onDelete={handleDelete} />
-            </Text>
           </View>
         )}
       />
@@ -224,57 +224,9 @@ const renderMembersTable = (id_team: string) => {
             <Text style={Tablestyles.cell}>{item.age}</Text>
             <Text style={Tablestyles.cell}>{item.task}</Text>
             <Text style={Tablestyles.cell}>{item.role}</Text>
-            <Text style={Tablestyles.cell}>
-              <ActionButtons onEdit={handleEdit} onDelete={handleDelete} />
-            </Text>
           </View>
         )}
       />
-    </View>
-  );
-};
-
-
-const TeamCard = ({ team }: { team: Team }) => {
-  const handleEdit = () => {
-    console.log(`Edit team ${team.name}`);
-  };
-
-  const handleDelete = () => {
-    console.log(`Delete team ${team.name}`);
-  };
-
-  return (
-    <View style={styles.card}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.title}>{team.name}</Text>
-          <Text style={styles.description}>{team.description}</Text>
-        </View>
-        <ActionButtons onEdit={handleEdit} onDelete={handleDelete} />
-      </View>
-
-      {/* Body */}
-      <View style={styles.body}>
-        <Text style={styles.label}>Progress</Text>
-        <View style={styles.progressWrapper}>
-          <View style={styles.progressBarContainer}>
-            <View
-              style={[styles.progressBar, { width: `${team.progress}%` }]}
-            />
-          </View>
-          <Text style={styles.progressText}>{team.progress}%</Text>
-        </View>
-      </View>
-
-      {/* Footer */}
-      <View style={styles.footer}>
-        <Text style={styles.taskCount}>{team.tasks} Tasks, {team.members} Members</Text>
-        <Text style={styles.dateRange}>
-          {team.startDate} - {team.endDate}
-        </Text>
-      </View>
     </View>
   );
 };
@@ -334,29 +286,24 @@ const TeamTab = ({ id_team }: { id_team: string }) => {
 
 
 const TeamDetail = () => {
-  const searchParams = useSearchParams(); // Lấy id từ query
-  const id = searchParams.get("id");
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id") || ""; // Lấy ID từ URL
+  const [team, setTeam] = useState<Team | null>(null);
 
-  // Tìm dự án tương ứng với id
-  const team = teams.find((proj) => proj.id === id);
+  useEffect(() => {
+    if (id) {
+      handleGetTeamById(id).then(setTeam); // Gọi API để lấy thông tin người dùng theo ID
+    }
+  }, [id]);
 
   if (!team) {
     return <Text>team not found!</Text>;
   }
-  const navigation = useNavigation();
-
-  useLayoutEffect(() => {
-    // Dùng navigation.setOptions để thay đổi tiêu đề thanh tiêu đề của trang
-    navigation.setOptions({
-      title: team.name,  // Tên tiêu đề thanh header
-    });
-  }, [team, navigation]);
 
   return (
-    <View style={styles.card}>
-      <TeamCard team={team} />
-      {id && <TeamTab id_team={id} />}
-    </View>
+    <ScrollView style={styles.container}>
+      <TeamView team={team} />
+    </ScrollView>
   );
 };
 
@@ -428,10 +375,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
-  members: {
+  userDetails: {
     fontSize: 14,
     color: "#555",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   footer: {
     flexDirection: "row",
