@@ -9,28 +9,29 @@ const TaskDetailScreen = () => {
   const params = useLocalSearchParams();
 
   type Task = {
+    _id: string;
     taskName: string;
     taskDescription: string;
     priority: string;
     deadline: string;
-    // taskStatus: string;
+    taskStatus: string;
     createdAt: string;
   };
 
-  const [btnLabel, setBtnLabel] = useState("To do");
+  // const [btnStatus, setBtnStatus] = useState("To do");
   // const handlePress = () => {
   //   setBtnLabel((prevText) => (prevText === "To do" ? "In Progress" : "Done"));
   // };
 
   const labels = ["To do", "In Progress", "Done"];
 
-  const handlePress = () => {
-    setBtnLabel((prevText) => {
-      const currentIndex = labels.indexOf(prevText);
-      const nextIndex = (currentIndex + 1) % labels.length;
-      return labels[nextIndex];
-    });
-  };
+  // const handlePress = () => {
+  //   setBtnStatus((prevText) => {
+  //     const currentIndex = labels.indexOf(prevText);
+  //     const nextIndex = (currentIndex + 1) % labels.length;
+  //     return labels[nextIndex];
+  //   });
+  // };
 
   const taskId = params.id;
   const [task, setTask] = useState<Task>();
@@ -50,13 +51,37 @@ const TaskDetailScreen = () => {
     fetchTask();
   }, [taskId]);
 
+  const handlePress = async () => {
+    setTask((prevStatus) => {
+      if (!prevStatus) return;
+
+      const currentIndex = labels.indexOf(prevStatus.taskStatus);
+      const nextIndex = (currentIndex + 1) % labels.length;
+      const nextStatus = labels[nextIndex];
+
+      updateTaskStatus(prevStatus._id, nextStatus);
+
+      // Cập nhật trạng thái cục bộ
+      return { ...prevStatus, taskStatus: nextStatus };
+    });
+  };
+
+  const updateTaskStatus = async (taskId: string, status: string) => {
+    try {
+      await api.put(`/tasks/${taskId}`, { taskStatus: status });
+      // console.log(`Task ${taskId} status updated to ${status}`);
+    } catch (error) {
+      console.error("Error updating task status:", error);
+    }
+  };
+
   return (
     <View style={taskDetailStyles.container}>
       <View>
         <View style={taskDetailStyles.taskLabel}>
           <Text style={taskDetailStyles.taskTitle}>{task?.taskName}</Text>
           <TouchableOpacity onPress={handlePress}>
-            <Text style={taskDetailStyles.taskTag}>{btnLabel}</Text>
+            <Text style={taskDetailStyles.taskTag}>{task?.taskStatus}</Text>
           </TouchableOpacity>
         </View>
 

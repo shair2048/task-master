@@ -130,7 +130,7 @@ const CreateTaskScreen = () => {
       // console.log("priority:", priority);
       // console.log("deadline:", deadline);
 
-      await api.post(`/tasks/${id}`, {
+      await api.post(`/tasks/user/${id}`, {
         taskName,
         taskDescription,
         priority,
