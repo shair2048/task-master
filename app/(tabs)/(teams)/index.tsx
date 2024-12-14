@@ -1,7 +1,9 @@
+import api from "@/api";
 import CreateTaskButton from "@/components/btn-create-task";
 import WorkspaceItems from "@/components/workspace-items";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -14,9 +16,43 @@ import {
 const TeamsScreen = () => {
   const router = useRouter();
 
+  type Team = {
+    _id: string;
+    teamName: string;
+  };
+
+  const [teams, setTeams] = useState<Team[]>([]);
+  useEffect(() => {
+    const teamsInfo = async () => {
+      const id = await AsyncStorage.getItem("userId");
+
+      if (!id) return;
+
+      try {
+        const response = await api.get(`/teams/user/${id}`);
+
+        setTeams(response.data);
+      } catch (error) {
+        console.log("Error call API:", error);
+      }
+    };
+    teamsInfo();
+  }, [teams]);
+
   const handlePress = async () => {
     router.push("/create-team");
   };
+
+  // const [currentTeam, setCurrentTeam] = useState("Individual");
+  // const [otherTeams, setOtherTeams] = useState(["Team 1", "Team 2", "Team 3"]);
+
+  // const handleTeamChange = (selectedTeam: string) => {
+  //   setOtherTeams((prevTeams) => [...prevTeams, currentTeam]);
+  //   setCurrentTeam(selectedTeam);
+  //   setOtherTeams((prevTeams) =>
+  //     prevTeams.filter((team) => team !== selectedTeam)
+  //   );
+  // };
 
   return (
     <View style={{ flex: 1 }}>
@@ -26,15 +62,20 @@ const TeamsScreen = () => {
             <Text style={teamsScreenStyles.workspaceTitle}>
               Current Workspace
             </Text>
-            <WorkspaceItems name="Personally" onChangePress={() => {}} />
+            {/* <WorkspaceItems name={currentTeam} onChangePress={() => {}} /> */}
           </View>
           <View style={teamsScreenStyles.workspace}>
             <Text style={teamsScreenStyles.workspaceTitle}>
               Other Workspace
             </Text>
-            <WorkspaceItems name="Team 1" onChangePress={() => {}} />
-            <WorkspaceItems name="Team 2" onChangePress={() => {}} />
-            <WorkspaceItems name="Team 3" onChangePress={() => {}} />
+
+            {teams.map((team, index) => (
+              <WorkspaceItems
+                key={index}
+                name={team.teamName}
+                onChangePress={() => {}}
+              />
+            ))}
           </View>
         </View>
       </ScrollView>

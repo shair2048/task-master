@@ -71,9 +71,9 @@ const HomeScreen = () => {
               The tasks assigned to you for today
             </Text>
           </View>
-          {tasks.map((task, idex) => (
+          {tasks.map((task, index) => (
             <Tasks
-              key={idex}
+              key={index}
               _id={task._id}
               taskName={task.taskName}
               taskStatus={task.taskStatus}

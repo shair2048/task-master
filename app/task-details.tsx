@@ -18,20 +18,7 @@ const TaskDetailScreen = () => {
     createdAt: string;
   };
 
-  // const [btnStatus, setBtnStatus] = useState("To do");
-  // const handlePress = () => {
-  //   setBtnLabel((prevText) => (prevText === "To do" ? "In Progress" : "Done"));
-  // };
-
   const labels = ["To do", "In Progress", "Done"];
-
-  // const handlePress = () => {
-  //   setBtnStatus((prevText) => {
-  //     const currentIndex = labels.indexOf(prevText);
-  //     const nextIndex = (currentIndex + 1) % labels.length;
-  //     return labels[nextIndex];
-  //   });
-  // };
 
   const taskId = params.id;
   const [task, setTask] = useState<Task>();

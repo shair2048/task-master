@@ -10,9 +10,7 @@ interface workspaceNameProps {
 const WorkspaceItems = ({ name, onChangePress }: workspaceNameProps) => {
   return (
     <TouchableOpacity
-      onPress={() => {
-        onChangePress;
-      }}
+      onPress={onChangePress}
       style={workspaceItemStyles.workspaceContent}
     >
       <DefaultAvatar />
