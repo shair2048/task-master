@@ -1,6 +1,8 @@
+import api from "@/api";
 import CreateTaskButton from "@/components/btn-create-task";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -14,15 +16,42 @@ import DropDownPicker from "react-native-dropdown-picker";
 const CreateTeamScreen = () => {
   const router = useRouter();
 
+  type User = {
+    _id: string;
+    username: string;
+  };
+
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
-  const [items, setItems] = useState([
-    { label: "Member 1", value: "en" },
-    { label: "Member 2", value: "de" },
-    { label: "Member 3", value: "fr" },
-  ]);
+  const [items, setItems] = useState<{ label: string; value: string }[]>([]);
+
+  const [teamName, setTeamName] = useState("");
+
+  useEffect(() => {
+    const usersInfo = async () => {
+      try {
+        const response = await api.get(`/account`);
+
+        const formattedItems = response.data.map((user: User) => ({
+          label: user.username,
+          value: user._id,
+        }));
+
+        setItems(formattedItems);
+      } catch (error) {
+        console.log("Error call API:", error);
+      }
+    };
+    usersInfo();
+  }, []);
 
   const handlePress = async () => {
+    const userId = await AsyncStorage.getItem("userId");
+    await api.post(`/teams/user/${userId}`, {
+      teamName,
+      memberId: value,
+    });
+
     router.push("/(tabs)/(teams)");
   };
 
@@ -35,7 +64,7 @@ const CreateTeamScreen = () => {
             style={styles.textInput}
             placeholder="Enter Team Name"
             placeholderTextColor="#98A2B3"
-            // onChangeText={setTaskName}
+            onChangeText={setTeamName}
           />
         </View>
 
@@ -55,7 +84,7 @@ const CreateTeamScreen = () => {
           />
         </View>
       </View>
-      <CreateTaskButton label="Create Task" onChangePress={handlePress} />
+      <CreateTaskButton label="Create Team" onChangePress={handlePress} />
     </View>
   );
 };

@@ -43,17 +43,6 @@ const TeamsScreen = () => {
     router.push("/create-team");
   };
 
-  // const [currentTeam, setCurrentTeam] = useState("Individual");
-  // const [otherTeams, setOtherTeams] = useState(["Team 1", "Team 2", "Team 3"]);
-
-  // const handleTeamChange = (selectedTeam: string) => {
-  //   setOtherTeams((prevTeams) => [...prevTeams, currentTeam]);
-  //   setCurrentTeam(selectedTeam);
-  //   setOtherTeams((prevTeams) =>
-  //     prevTeams.filter((team) => team !== selectedTeam)
-  //   );
-  // };
-
   return (
     <View style={{ flex: 1 }}>
       <ScrollView>

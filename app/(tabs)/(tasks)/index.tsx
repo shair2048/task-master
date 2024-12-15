@@ -91,12 +91,12 @@ const TasksScreen = () => {
               </TouchableOpacity>
             ))}
           </View>
-          <Tasks
+          {/* <Tasks
             taskName="Task 1"
             taskStatus="To do"
             taskPriority="High"
             deadline="15-12-2024"
-          />
+          /> */}
         </View>
       </ScrollView>
       <CreateTaskButton label="New Task" onChangePress={handlePress} />
