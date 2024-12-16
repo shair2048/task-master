@@ -22,6 +22,8 @@ const TeamsScreen = () => {
   };
 
   const [teams, setTeams] = useState<Team[]>([]);
+  const [currentTeam, setCurrentTeam] = useState<Team | null>(null);
+
   useEffect(() => {
     const teamsInfo = async () => {
       const id = await AsyncStorage.getItem("userId");
@@ -32,6 +34,10 @@ const TeamsScreen = () => {
         const response = await api.get(`/teams/user/${id}`);
 
         setTeams(response.data);
+
+        if (response.data.length > 0) {
+          setCurrentTeam(response.data[0]);
+        }
       } catch (error) {
         console.log("Error call API:", error);
       }
@@ -52,6 +58,12 @@ const TeamsScreen = () => {
               Current Workspace
             </Text>
             {/* <WorkspaceItems name={currentTeam} onChangePress={() => {}} /> */}
+            {currentTeam && (
+              <WorkspaceItems
+                name={currentTeam.teamName}
+                onChangePress={() => {}}
+              />
+            )}
           </View>
           <View style={teamsScreenStyles.workspace}>
             <Text style={teamsScreenStyles.workspaceTitle}>
@@ -62,7 +74,16 @@ const TeamsScreen = () => {
               <WorkspaceItems
                 key={index}
                 name={team.teamName}
-                onChangePress={() => {}}
+                onChangePress={() => {
+                  setCurrentTeam(team);
+
+                  setTeams((prevTeams) => {
+                    const updatedTeams = prevTeams.filter(
+                      (t) => t.teamName !== team.teamName
+                    );
+                    return [team, ...updatedTeams];
+                  });
+                }}
               />
             ))}
           </View>
