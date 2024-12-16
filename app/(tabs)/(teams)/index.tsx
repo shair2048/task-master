@@ -35,7 +35,7 @@ const TeamsScreen = () => {
 
         setTeams(response.data);
 
-        if (response.data.length > 0) {
+        if (!currentTeam) {
           setCurrentTeam(response.data[0]);
         }
       } catch (error) {
@@ -43,10 +43,24 @@ const TeamsScreen = () => {
       }
     };
     teamsInfo();
-  }, [teams]);
+  }, []);
 
   const handlePress = async () => {
     router.push("/create-team");
+  };
+  const handlePressTeam = async (team: Team) => {
+    await AsyncStorage.setItem("currentTeamId", team._id);
+    // const currentTeamId = await AsyncStorage.getItem("currentTeamId");
+    // console.log(currentTeamId);
+
+    setCurrentTeam(team);
+
+    setTeams((prevTeams) => {
+      const updatedTeams = prevTeams.filter(
+        (t) => t.teamName !== team.teamName
+      );
+      return [team, ...updatedTeams];
+    });
   };
 
   return (
@@ -74,16 +88,7 @@ const TeamsScreen = () => {
               <WorkspaceItems
                 key={index}
                 name={team.teamName}
-                onChangePress={() => {
-                  setCurrentTeam(team);
-
-                  setTeams((prevTeams) => {
-                    const updatedTeams = prevTeams.filter(
-                      (t) => t.teamName !== team.teamName
-                    );
-                    return [team, ...updatedTeams];
-                  });
-                }}
+                onChangePress={() => handlePressTeam(team)}
               />
             ))}
           </View>
