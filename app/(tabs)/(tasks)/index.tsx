@@ -1,7 +1,7 @@
 import CreateTaskButton from "@/components/btn-create-task";
 import Tasks from "@/app/tasks";
 import { Link, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -11,6 +11,8 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "@/api";
 
 interface Tag {
   title: string;
@@ -27,10 +29,20 @@ const tags: Tag[] = [
 ];
 
 const TasksScreen = () => {
+  type Task = {
+    _id: string;
+    taskName: string;
+    taskStatus: string;
+    priority: string;
+    deadline: string;
+  };
+
   const [selectedProgressTab, setSelectedProgressTab] = useState<number>(0);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [selectedTabTasks, setSelectedTabTasks] = useState<Task[]>([]);
 
   const tabs: ProgressTab[] = [
-    { title: "All" },
+    { title: "To do" },
     { title: "In Progress" },
     { title: "Finish" },
   ];
@@ -40,6 +52,49 @@ const TasksScreen = () => {
   const handlePress = () => {
     router.push("/create-task");
   };
+
+  useEffect(() => {
+    const taskInfo = async () => {
+      // const id = await AsyncStorage.getItem("userId");
+      const teamId = await AsyncStorage.getItem("currentTeamId");
+
+      if (!teamId) return;
+
+      try {
+        const response = await api.get(`/tasks/workspace/${teamId}`);
+
+        setTasks(response.data);
+      } catch (error) {
+        console.log("Error call API:", error);
+      }
+    };
+    taskInfo();
+  }, [tasks]);
+
+  // useEffect(() => {
+  //   if (selectedProgressTab === 0) {
+  //     setSelectedTabTasks(tasks.filter((task) => task.taskStatus === "To do"));
+  //   } else if (selectedProgressTab === 1) {
+  //     setSelectedTabTasks(
+  //       tasks.filter((task) => task.taskStatus === "In Progress")
+  //     );
+  //   } else if (selectedProgressTab === 2) {
+  //     setSelectedTabTasks(tasks.filter((task) => task.taskStatus === "Done"));
+  //   }
+  // }, [selectedProgressTab, tasks]);
+
+  const taskStatusMap: { [key: number]: string } = {
+    0: "To do",
+    1: "In Progress",
+    2: "Done",
+  };
+
+  useEffect(() => {
+    const status = taskStatusMap[selectedProgressTab];
+    if (status) {
+      setSelectedTabTasks(tasks.filter((task) => task.taskStatus === status));
+    }
+  }, [selectedProgressTab, tasks]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -91,12 +146,16 @@ const TasksScreen = () => {
               </TouchableOpacity>
             ))}
           </View>
-          {/* <Tasks
-            taskName="Task 1"
-            taskStatus="To do"
-            taskPriority="High"
-            deadline="15-12-2024"
-          /> */}
+          {selectedTabTasks.map((task, index) => (
+            <Tasks
+              key={index}
+              _id={task._id}
+              taskName={task.taskName}
+              taskStatus={task.taskStatus}
+              taskPriority={task.priority}
+              deadline={task.deadline}
+            />
+          ))}
         </View>
       </ScrollView>
       <CreateTaskButton label="New Task" onChangePress={handlePress} />

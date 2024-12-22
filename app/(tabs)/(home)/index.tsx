@@ -25,25 +25,6 @@ const HomeScreen = () => {
 
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  // const taskInfo = async () => {
-  //   const id = await AsyncStorage.getItem("userId");
-
-  //   if (!id) return;
-
-  //   try {
-  //     const response = await api.get(`/tasks/user/${id}`);
-
-  //     setTasks(response.data);
-  //   } catch (error) {
-  //     console.log("Error call API:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   taskInfo();
-  //   // console.log(tasks);
-  // }, []);
-
   useEffect(() => {
     const taskInfo = async () => {
       // const id = await AsyncStorage.getItem("userId");
