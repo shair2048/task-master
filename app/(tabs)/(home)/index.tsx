@@ -46,12 +46,13 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const taskInfo = async () => {
-      const id = await AsyncStorage.getItem("userId");
+      // const id = await AsyncStorage.getItem("userId");
+      const teamId = await AsyncStorage.getItem("currentTeamId");
 
-      if (!id) return;
+      if (!teamId) return;
 
       try {
-        const response = await api.get(`/tasks/user/${id}`);
+        const response = await api.get(`/tasks/workspace/${teamId}`);
 
         setTasks(response.data);
       } catch (error) {
@@ -60,6 +61,7 @@ const HomeScreen = () => {
     };
     taskInfo();
   }, [tasks]);
+  // console.log(tasks);
 
   return (
     <View style={{ flex: 1 }}>
