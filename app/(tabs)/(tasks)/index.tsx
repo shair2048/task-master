@@ -14,6 +14,14 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "@/api";
 
+type Task = {
+  _id: string;
+  taskName: string;
+  taskStatus: string;
+  priority: string;
+  deadline: string;
+};
+
 interface Tag {
   title: string;
   value: number;
@@ -22,24 +30,18 @@ interface ProgressTab {
   title: string;
 }
 
-const tags: Tag[] = [
-  { title: "To do", value: 5 },
-  { title: "In progress", value: 2 },
-  { title: "Done", value: 1 },
-];
-
 const TasksScreen = () => {
-  type Task = {
-    _id: string;
-    taskName: string;
-    taskStatus: string;
-    priority: string;
-    deadline: string;
-  };
+  const router = useRouter();
 
   const [selectedProgressTab, setSelectedProgressTab] = useState<number>(0);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTabTasks, setSelectedTabTasks] = useState<Task[]>([]);
+
+  const taskStatusMap: { [key: number]: string } = {
+    0: "To do",
+    1: "In Progress",
+    2: "Done",
+  };
 
   const tabs: ProgressTab[] = [
     { title: "To do" },
@@ -47,11 +49,20 @@ const TasksScreen = () => {
     { title: "Finish" },
   ];
 
-  const router = useRouter();
-
-  const handlePress = () => {
-    router.push("/create-task");
-  };
+  const tags: Tag[] = [
+    {
+      title: "To do",
+      value: tasks.filter((task) => task.taskStatus === "To do").length,
+    },
+    {
+      title: "In progress",
+      value: tasks.filter((task) => task.taskStatus === "In Progress").length,
+    },
+    {
+      title: "Done",
+      value: tasks.filter((task) => task.taskStatus === "Done").length,
+    },
+  ];
 
   useEffect(() => {
     const taskInfo = async () => {
@@ -71,22 +82,8 @@ const TasksScreen = () => {
     taskInfo();
   }, [tasks]);
 
-  // useEffect(() => {
-  //   if (selectedProgressTab === 0) {
-  //     setSelectedTabTasks(tasks.filter((task) => task.taskStatus === "To do"));
-  //   } else if (selectedProgressTab === 1) {
-  //     setSelectedTabTasks(
-  //       tasks.filter((task) => task.taskStatus === "In Progress")
-  //     );
-  //   } else if (selectedProgressTab === 2) {
-  //     setSelectedTabTasks(tasks.filter((task) => task.taskStatus === "Done"));
-  //   }
-  // }, [selectedProgressTab, tasks]);
-
-  const taskStatusMap: { [key: number]: string } = {
-    0: "To do",
-    1: "In Progress",
-    2: "Done",
+  const handlePress = () => {
+    router.push("/create-task");
   };
 
   useEffect(() => {
