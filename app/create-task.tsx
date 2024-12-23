@@ -71,7 +71,7 @@ const CreateTaskScreen = () => {
   // const [members, setMembers] = useState<Member[]>([]);
   // Assign To Dropdown
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [items, setItems] = useState<DropdownItem[]>([]);
 
   useEffect(() => {
@@ -165,14 +165,16 @@ const CreateTaskScreen = () => {
       );
 
       const deadline = combinedDeadline.toISOString();
+      const assignToArray = userId ? [userId] : [];
+      // console.log(assignToArray);
 
       await api.post(`/tasks/create/?id=${id}&teamId=${teamId}`, {
         taskName,
         taskDescription,
+        assignTo: assignToArray,
         priority,
         deadline,
       });
-      // console.log("Create task success");
 
       router.push("/(tabs)/(tasks)");
     } catch (err) {
@@ -219,10 +221,10 @@ const CreateTaskScreen = () => {
 
           <DropDownPicker
             open={open}
-            value={value}
+            value={userId}
             items={items}
             setOpen={setOpen}
-            setValue={setValue}
+            setValue={setUserId}
             setItems={setItems}
             placeholder="Select Member"
             style={btnStyles.container}
