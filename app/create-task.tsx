@@ -7,7 +7,7 @@ import {
   ScrollView,
   Button,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CreateTaskButton from "../components/btn-create-task";
 import {
   Modal,
@@ -27,22 +27,39 @@ import { useRouter } from "expo-router";
 import api from "@/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+type Member = {
+  userId: string;
+  username: string;
+  role: string;
+};
+
+type Team = {
+  _id: string;
+  teamName: string;
+  members: Member[];
+};
+
+type DropdownItem = {
+  label: string;
+  value: string;
+};
+
 interface BtnInfo {
   label: string;
   title: string;
 }
 
-const btnInfos: BtnInfo[] = [
-  { label: "Assign To", title: "Select Member" },
-  { label: "Priority", title: "Select Priority" },
-  { label: "Deadline", title: "Select Deadline" },
-];
+// const btnInfos: BtnInfo[] = [
+//   { label: "Assign To", title: "Select Member" },
+//   { label: "Priority", title: "Select Priority" },
+//   { label: "Deadline", title: "Select Deadline" },
+// ];
 
-const taskPriorityLabels = [
-  { label: "Low" },
-  { label: "Medium" },
-  { label: "High" },
-];
+// const taskPriorityLabels = [
+//   { label: "Low" },
+//   { label: "Medium" },
+//   { label: "High" },
+// ];
 
 const CreateTaskScreen = () => {
   const router = useRouter();
@@ -51,6 +68,39 @@ const CreateTaskScreen = () => {
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
 
+  // const [members, setMembers] = useState<Member[]>([]);
+  // Assign To Dropdown
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(null);
+  const [items, setItems] = useState<DropdownItem[]>([]);
+
+  useEffect(() => {
+    const teamsInfo = async () => {
+      const teamId = await AsyncStorage.getItem("currentTeamId");
+
+      if (!teamId) return;
+
+      try {
+        const teams = await api.get(`/teams/${teamId}`);
+
+        const memberData = teams.data.members
+          .filter((member: Member) => member.role === "Member")
+          .map((member: Member) => ({
+            label: member.username,
+            value: member.userId,
+          }));
+
+        setItems(memberData);
+        // setMembers(teams.data.members);
+      } catch (error) {
+        console.log("Error call API:", error);
+      }
+    };
+    teamsInfo();
+  }, []);
+
+  // console.log(members);
+
   // Priority Dropdown
   const [openPriority, setOpenPriority] = useState(false);
   const [priority, setValuePriority] = useState(null);
@@ -58,15 +108,6 @@ const CreateTaskScreen = () => {
     { label: "Low", value: "Low" },
     { label: "Medium", value: "Medium" },
     { label: "High", value: "High" },
-  ]);
-
-  // Assign To Dropdown
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
-  const [items, setItems] = useState([
-    { label: "English", value: "en" },
-    { label: "Deutsch", value: "de" },
-    { label: "French", value: "fr" },
   ]);
 
   // const showModal = () => setModalVisible(true);
@@ -110,6 +151,7 @@ const CreateTaskScreen = () => {
 
   const handleCreateTask = async () => {
     const id = await AsyncStorage.getItem("userId");
+    const teamId = await AsyncStorage.getItem("currentTeamId");
 
     try {
       // Kết hợp date và time vào deadline
@@ -124,18 +166,13 @@ const CreateTaskScreen = () => {
 
       const deadline = combinedDeadline.toISOString();
 
-      // console.log("userId:", id);
-      // console.log("taskName:", taskName);
-      // console.log("taskDescription:", taskDescription);
-      // console.log("priority:", priority);
-      // console.log("deadline:", deadline);
-
-      await api.post(`/tasks/user/${id}`, {
+      await api.post(`/tasks/create/?id=${id}&teamId=${teamId}`, {
         taskName,
         taskDescription,
         priority,
         deadline,
       });
+      // console.log("Create task success");
 
       router.push("/(tabs)/(tasks)");
     } catch (err) {
