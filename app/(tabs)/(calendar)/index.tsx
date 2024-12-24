@@ -1,53 +1,147 @@
+import api from "@/api";
 import Tasks from "@/app/tasks";
-import React from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Calendar, CalendarList, Agenda } from "react-native-calendars";
+const { format } = require("date-fns");
 
-const taskDates = {
-  "2024-12-18": { startingDay: true, color: "blue", textColor: "white" },
-  "2024-12-19": { color: "blue", textColor: "white" },
-  "2024-12-20": {
-    // selected: true,
-    endingDay: true,
-    color: "blue",
-    textColor: "white",
-  },
-  "2024-12-23": { marked: true, dotColor: "blue" },
-  "2024-12-24": { marked: true, dotColor: "blue" },
+type Task = {
+  _id: string;
+  taskName: string;
+  taskStatus: string;
+  priority: string;
+  deadline: string;
+  createdAt: string;
+};
+
+type MarkedDate = {
+  [date: string]: {
+    startingDay?: boolean;
+    endingDay?: boolean;
+    color?: string;
+    textColor?: string;
+    marked?: boolean;
+    dotColor?: string;
+  };
 };
 
 const CalendarScreen = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [markedDates, setMarkedDates] = useState<MarkedDate>({});
+  const [selectedTasks, setSelectedTasks] = useState<Task[]>([]);
+
+  const convertToISOFormat = (dateStr: string): string => {
+    if (!dateStr) return "";
+    const [day, month, year] = dateStr.split("-");
+    return `${year}-${month}-${day}`;
+  };
+
+  const getDatesBetween = (startDate: string, endDate: string): string[] => {
+    const convertToDateObject = (dateStr: string): Date => {
+      const [day, month, year] = dateStr.split("-");
+      return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    };
+
+    const dates: string[] = [];
+    const currentDate = convertToDateObject(startDate);
+    const end = convertToDateObject(endDate);
+
+    // while (currentDate <= end) {
+    //   dates.push(currentDate.toISOString().split("T")[0]);
+    //   currentDate.setDate(currentDate.getDate() + 1);
+    // }
+    // dates.push(currentDate.toString()[0]);
+
+    while (currentDate <= end) {
+      dates.push(format(currentDate, "yyyy-MM-dd"));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return dates;
+  };
+
+  useEffect(() => {
+    const taskInfo = async () => {
+      const teamId = await AsyncStorage.getItem("currentTeamId");
+
+      if (!teamId) return;
+
+      try {
+        const response = await api.get(`/tasks/workspace/${teamId}`);
+        const tasksData = response.data;
+
+        setTasks(tasksData);
+
+        const newMarkedDates: MarkedDate = {};
+        tasksData.forEach((task: Task) => {
+          const dates = getDatesBetween(task.createdAt, task.deadline);
+          // console.log(dates);
+
+          dates.forEach((date, index) => {
+            newMarkedDates[date] = {
+              ...(newMarkedDates[date] || {}),
+              color: "blue",
+              textColor: "white",
+            };
+            if (index === 0) {
+              newMarkedDates[date].startingDay = true;
+            }
+            if (index === dates.length - 1) {
+              newMarkedDates[date].endingDay = true;
+            }
+          });
+        });
+
+        setMarkedDates(newMarkedDates);
+      } catch (error) {
+        console.log("Error call API:", error);
+      }
+    };
+    taskInfo();
+  }, [tasks]);
+  // console.log(tasks);
+
+  const onDayPress = (day: { dateString: string }) => {
+    const selectedDate = day.dateString;
+    const tasksForSelectedDate = tasks.filter((task) => {
+      const taskStartDate = task.createdAt;
+      const taskEndDate = task.deadline;
+      const dates = getDatesBetween(taskStartDate, taskEndDate);
+
+      return dates.includes(selectedDate);
+    });
+
+    setSelectedTasks(tasksForSelectedDate);
+  };
+
   return (
     <View style={calendarScreenStyles.container}>
       <Calendar
         markingType={"period"}
-        markedDates={taskDates}
-        // onDayPress={onDayPress}
+        markedDates={markedDates}
         // theme={{
         //   selectedDayBackgroundColor: "blue",
         //   selectedDayTextColor: "#ffffff",
         //   todayTextColor: "red",
         //   arrowColor: "blue",
         // }}
+        onDayPress={onDayPress}
         style={calendarScreenStyles.calendar}
       />
       <View style={{ gap: 10 }}>
         <Text style={calendarScreenStyles.infoTitle}>Selected Task</Text>
-        {/* <TouchableOpacity onPress={() => {}}>
-            <Text style={calendarScreenStyles.taskTitle}>
-              Wiring Dashboard Analytics
-            </Text>
-            <View style={{ flexDirection: "row", gap: 12 }}>
-              <Text style={calendarScreenStyles.taskTag}>In Progress</Text>
-              <Text style={calendarScreenStyles.taskTag}>High</Text>
-            </View>
-          </TouchableOpacity> */}
-        <Tasks
-          taskName="Task 1"
-          taskStatus="To do"
-          taskPriority="High"
-          deadline="15-12-2024"
-        />
+
+        {selectedTasks.map((task, index) => (
+          <Tasks
+            key={index}
+            _id={task._id}
+            taskName={task.taskName}
+            taskStatus={task.taskStatus}
+            taskPriority={task.priority}
+            deadline={task.deadline}
+          />
+        ))}
       </View>
     </View>
   );
