@@ -7,13 +7,14 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { useRouter, SearchParams } from "expo-router"; // Hoặc react-router nếu bạn dùng trên web
+import { useRouter } from "expo-router"; 
 import { useSearchParams } from "expo-router/build/hooks";
+import api from "@/api";
 
 const CreateUserScreen = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const id = searchParams.get("id"); // Lấy ID từ URL
+  const id = searchParams.get("id");
 
   const [user, setUser] = useState({
     _id: "",
@@ -25,12 +26,10 @@ const CreateUserScreen = () => {
     teams: [],
   });
 
-  // Hàm tải dữ liệu người dùng từ database
   const fetchUserData = async (userId: string) => {
     try {
-      const response = await fetch(`https://your-api.com/users/${userId}`);
-      const data = await response.json();
-      setUser(data); // Cập nhật state với dữ liệu từ server
+      const response = await api.get(`/account/${userId}`);
+      setUser(response.data);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -38,7 +37,7 @@ const CreateUserScreen = () => {
 
   useEffect(() => {
     if (id) {
-      fetchUserData(id as string); // Gọi hàm tải dữ liệu nếu có ID
+      fetchUserData(id);
     }
   }, [id]);
 
@@ -48,6 +47,30 @@ const CreateUserScreen = () => {
       [field]: value,
     }));
   };
+
+  const handleSubmit = async () => {
+    try {
+      if (id) {
+        // Cập nhật thông tin tài khoản
+        await api.put(`/account/${id}`, user);
+        console.log("User updated successfully");
+      } else {
+        await api.post(`/account`, user);
+        console.log("User created successfully");
+      }
+      router.push("/(admin)/(users)"); // Quay lại danh sách tài khoản
+    } catch (error) {
+      console.error("Error submitting user data:", error);
+    }
+  };
+
+  if (!user && id) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading user data...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -103,7 +126,7 @@ const CreateUserScreen = () => {
         />
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -141,5 +164,10 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "600",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

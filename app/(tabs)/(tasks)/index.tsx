@@ -91,6 +91,7 @@ const TasksScreen = () => {
     };
     taskInfo();
   }, [tasks]);
+  // console.log(tasks);
 
   const handlePress = () => {
     router.push("/create-task");
