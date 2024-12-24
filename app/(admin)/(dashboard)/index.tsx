@@ -3,8 +3,18 @@ import api from "@/api";
 import CreateTaskButton from "@/components/btn-create-task";
 import ActionButtons from "@/components/btn-optiton";
 import { router, useRouter } from "expo-router";
-import { Dimensions, FlatList, ScrollView, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  Dimensions,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { BarChart } from "react-native-chart-kit";
+import React from "react";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -40,9 +50,9 @@ interface Task {
 }
 
 const tags: Tag[] = [
-  { title: "To do"},
-  { title: "In progress"},
-  { title: "Done"},
+  { title: "To do" },
+  { title: "In progress" },
+  { title: "Done" },
 ];
 
 interface Priority {
@@ -50,9 +60,9 @@ interface Priority {
 }
 
 const priorities: Priority[] = [
-  { title: "Low"},
-  { title: "Medium"},
-  { title: "High"},
+  { title: "Low" },
+  { title: "Medium" },
+  { title: "High" },
 ];
 
 const handleGetTeams = async () => {
@@ -69,12 +79,12 @@ const handleGetTasks = async () => {
   try {
     const response = await api.get("/tasks");
     console.log(response.data);
-    return response.data || []; 
+    return response.data || [];
   } catch (error) {
     console.error("Fetch tasks error", error);
     return [];
   }
-}
+};
 
 const TeamItem = ({ team }: { team: Team }) => {
   const router = useRouter(); // Gọi hook trong component con
@@ -90,14 +100,22 @@ const TeamItem = ({ team }: { team: Team }) => {
 
   return (
     <View style={styles.tableRow}>
-      <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToTeamDetail}>
+      <TouchableOpacity
+        style={styles.tableCell}
+        onPress={handleNavigateToTeamDetail}
+      >
         <Text style={styles.tableCell}>{team.teamName || "Unnamed Team"}</Text>
       </TouchableOpacity>
       <Text style={styles.tableCell}>{team.members.length || 0}</Text>
-      <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToUserDetail}>
+      <TouchableOpacity
+        style={styles.tableCell}
+        onPress={handleNavigateToUserDetail}
+      >
         <Text style={styles.tableCell}>{leader?.username || "No leader"}</Text>
       </TouchableOpacity>
-      <Text style={styles.tableCell}>{new Date(team.createdAt).toLocaleDateString()}</Text>
+      <Text style={styles.tableCell}>
+        {new Date(team.createdAt).toLocaleDateString()}
+      </Text>
     </View>
   );
 };
@@ -121,38 +139,55 @@ const TaskItem = ({ task }: { task: Task }) => {
 
   return (
     <View style={styles.tableRow}>
-      <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToTaskDetail}>
+      <TouchableOpacity
+        style={styles.tableCell}
+        onPress={handleNavigateToTaskDetail}
+      >
         <Text style={styles.tableCell}>{task.taskName || "Unnamed Task"}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToUserDetail}>
-      <Text style={styles.tableCell}>{task.createdBy.username || "Unname"}</Text>
+      <TouchableOpacity
+        style={styles.tableCell}
+        onPress={handleNavigateToUserDetail}
+      >
+        <Text style={styles.tableCell}>
+          {task.createdBy.username || "Unname"}
+        </Text>
       </TouchableOpacity>
       <Text style={styles.tableCell}>{task.assignTo.length || 0}</Text>
       <Text style={styles.tableCell}>{task.priority || "Unknown"}</Text>
       <Text style={styles.tableCell}>{task.taskStatus || "Unknown"}</Text>
-      <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToTeamDetail}>
-        <Text style={styles.tableCell}>{task.teams ? task.teams.teamName : "Unknown"}</Text>
+      <TouchableOpacity
+        style={styles.tableCell}
+        onPress={handleNavigateToTeamDetail}
+      >
+        <Text style={styles.tableCell}>
+          {task.teams ? task.teams.teamName : "Unknown"}
+        </Text>
       </TouchableOpacity>
-      <Text style={styles.tableCell}>{new Date(task.createdAt).toLocaleDateString()}</Text>
-      <Text style={styles.tableCell}>{new Date(task.deadline).toLocaleDateString()}</Text>
+      <Text style={styles.tableCell}>
+        {new Date(task.createdAt).toLocaleDateString()}
+      </Text>
+      <Text style={styles.tableCell}>
+        {new Date(task.deadline).toLocaleDateString()}
+      </Text>
     </View>
   );
-}
+};
 
 const titleStatusCount = (tasks: Task[], tags: Tag[]) => {
   const tagMap: { [key: string]: number } = {};
 
-  tags.forEach(tag => {
+  tags.forEach((tag) => {
     tagMap[tag.title] = 0;
   });
 
-  tasks.forEach(task => {
+  tasks.forEach((task) => {
     if (tagMap[task.taskStatus] !== undefined) {
       tagMap[task.taskStatus]++;
     }
   });
 
-  return tags.map(tag => ({
+  return tags.map((tag) => ({
     ...tag,
     count: tagMap[tag.title],
   }));
@@ -161,17 +196,17 @@ const titleStatusCount = (tasks: Task[], tags: Tag[]) => {
 const titlePriorityCount = (tasks: Task[], priorities: Priority[]) => {
   const priorityMap: { [key: string]: number } = {};
 
-  priorities.forEach(priority => {
+  priorities.forEach((priority) => {
     priorityMap[priority.title] = 0;
   });
 
-  tasks.forEach(task => {
+  tasks.forEach((task) => {
     if (priorityMap[task.priority] !== undefined) {
       priorityMap[task.priority]++;
     }
   });
 
-  return priorities.map(priority => ({
+  return priorities.map((priority) => ({
     ...priority,
     count: priorityMap[priority.title],
   }));
@@ -181,27 +216,29 @@ const CurrentTask = ({ tasks }: { tasks: Task[] }) => {
   const updatedTags = titleStatusCount(tasks, tags);
   const updatedPriorities = titlePriorityCount(tasks, priorities);
   const data = {
-    labels: updatedPriorities.map(priority => priority.title),
+    labels: updatedPriorities.map((priority) => priority.title),
     datasets: [
       {
-        data: updatedPriorities.map(priority => priority.count || 0),
+        data: updatedPriorities.map((priority) => priority.count || 0),
       },
     ],
   };
 
   return (
-    <><View style={styles.section}>
-      <Text style={styles.sectionTitle}>Summary of Work</Text>
-      <Text style={styles.sectionSubtitle}>Current task progress</Text>
-      <View style={styles.tagsContainer}>
-        {updatedTags.map((tag, index) => (
-          <View key={index} style={styles.tag}>
-            <Text style={styles.tagTitle}>{tag.title}</Text>
-            <Text style={styles.tagValue}>{tag.count}</Text>
-          </View>
-        ))}
+    <>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Summary of Work</Text>
+        <Text style={styles.sectionSubtitle}>Current task progress</Text>
+        <View style={styles.tagsContainer}>
+          {updatedTags.map((tag, index) => (
+            <View key={index} style={styles.tag}>
+              <Text style={styles.tagTitle}>{tag.title}</Text>
+              <Text style={styles.tagValue}>{tag.count}</Text>
+            </View>
+          ))}
+        </View>
       </View>
-    </View><View style={styles.section}>
+      <View style={styles.section}>
         <Text style={styles.sectionTitle}>Task Priorities</Text>
         <Text style={styles.sectionSubtitle}>Current task priorities</Text>
         <BarChart
@@ -213,9 +250,10 @@ const CurrentTask = ({ tasks }: { tasks: Task[] }) => {
           fromZero
           showBarTops={false}
           yAxisLabel=""
-          yAxisSuffix="" />
-</View></>
-    
+          yAxisSuffix=""
+        />
+      </View>
+    </>
   );
 };
 
@@ -224,7 +262,6 @@ const DashboardScreen = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -244,8 +281,6 @@ const DashboardScreen = () => {
     fetchData();
   }, []);
 
-
-
   const renderTeamItem = ({ item }: { item: Team }) => <TeamItem team={item} />;
   const renderTaskItem = ({ item }: { item: Task }) => <TaskItem task={item} />;
 
@@ -258,7 +293,7 @@ const DashboardScreen = () => {
           {/* Teams Section */}
           <View style={wrapContainerStyles.container}>
             {/* Team Table */}
-            <View style={wrapContainerStyles.containerItem}>   
+            <View style={wrapContainerStyles.containerItem}>
               <Text style={styles.sectionTitle}>Teams</Text>
               <View style={styles.table}>
                 <View style={styles.tableRow}>
@@ -279,8 +314,8 @@ const DashboardScreen = () => {
               </View>
             </View>
 
-          {/* Tasks Section */}
-          <View style={wrapContainerStyles.containerItem}>              
+            {/* Tasks Section */}
+            <View style={wrapContainerStyles.containerItem}>
               <Text style={styles.sectionTitle}>Tasks Near Deadline</Text>
               <View style={styles.table}>
                 <View style={styles.tableRow}>
@@ -302,7 +337,7 @@ const DashboardScreen = () => {
                     keyExtractor={(item) => item._id.toString()}
                   />
                 )}
-              </View>  
+              </View>
             </View>
           </View>
         </View>
@@ -399,7 +434,6 @@ const chartConfig = {
   color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
   barPercentage: 1.5,
 };
-
 
 const wrapContainerStyles = StyleSheet.create({
   container: {
