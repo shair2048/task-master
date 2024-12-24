@@ -1,7 +1,6 @@
 import CreateTaskButton from "@/components/btn-create-task";
-import Tasks from "@/app/tasks";
 import { Link, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -11,6 +10,16 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "@/api";
+
+type Task = {
+  _id: string;
+  taskName: string;
+  taskStatus: string;
+  taskPriority: string;
+  deadline: string;
+};
 
 interface Tag {
   title: string;
@@ -20,26 +29,79 @@ interface ProgressTab {
   title: string;
 }
 
-const tags: Tag[] = [
-  { title: "To do", value: 5 },
-  { title: "In progress", value: 2 },
-  { title: "Done", value: 1 },
-];
+const Tasks = ({ _id, taskName, taskStatus, taskPriority, deadline }: Task) => {
+  return (
+    <View style={styles.taskContainer}>
+      <Text>{taskName}</Text>
+      <Text>{taskStatus}</Text>
+      <Text>{taskPriority}</Text>
+      <Text>{deadline}</Text>
+    </View>
+  );
+};
 
 const TasksScreen = () => {
+  const router = useRouter();
+
   const [selectedProgressTab, setSelectedProgressTab] = useState<number>(0);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [selectedTabTasks, setSelectedTabTasks] = useState<Task[]>([]);
+
+  const taskStatusMap: { [key: number]: string } = {
+    0: "To do",
+    1: "In Progress",
+    2: "Done",
+  };
 
   const tabs: ProgressTab[] = [
-    { title: "All" },
+    { title: "To do" },
     { title: "In Progress" },
     { title: "Finish" },
   ];
 
-  const router = useRouter();
+  const tags: Tag[] = [
+    {
+      title: "To do",
+      value: tasks.filter((task) => task.taskStatus === "To do").length,
+    },
+    {
+      title: "In progress",
+      value: tasks.filter((task) => task.taskStatus === "In Progress").length,
+    },
+    {
+      title: "Done",
+      value: tasks.filter((task) => task.taskStatus === "Done").length,
+    },
+  ];
+
+  useEffect(() => {
+    const taskInfo = async () => {
+      // const id = await AsyncStorage.getItem("userId");
+      const teamId = await AsyncStorage.getItem("currentTeamId");
+
+      if (!teamId) return;
+
+      try {
+        const response = await api.get(`/tasks/workspace/${teamId}`);
+
+        setTasks(response.data);
+      } catch (error) {
+        console.log("Error call API:", error);
+      }
+    };
+    taskInfo();
+  }, [tasks]);
 
   const handlePress = () => {
     router.push("/create-task");
   };
+
+  useEffect(() => {
+    const status = taskStatusMap[selectedProgressTab];
+    if (status) {
+      setSelectedTabTasks(tasks.filter((task) => task.taskStatus === status));
+    }
+  }, [selectedProgressTab, tasks]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -91,11 +153,16 @@ const TasksScreen = () => {
               </TouchableOpacity>
             ))}
           </View>
-          <Tasks />
-          <Tasks />
-          <Tasks />
-          <Tasks />
-          <Tasks />
+          {selectedTabTasks.map((task, index) => (
+            <Tasks
+              key={index}
+              _id={task._id}
+              taskName={task.taskName}
+              taskStatus={task.taskStatus}
+              taskPriority={task.taskPriority}
+              deadline={task.deadline}
+            />
+          ))}
         </View>
       </ScrollView>
       <CreateTaskButton label="New Task" onChangePress={handlePress} />
@@ -111,6 +178,12 @@ const styles = StyleSheet.create({
     gap: 16,
     marginVertical: 16,
     marginHorizontal: 12,
+  },
+  taskContainer: {
+    padding: 10,
+    margin: 5,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 5,
   },
 });
 

@@ -7,7 +7,7 @@ import {
   ScrollView,
   Button,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CreateTaskButton from "../components/btn-create-task";
 import {
   Modal,
@@ -23,39 +23,91 @@ import DropDownPicker from "react-native-dropdown-picker";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import api from "@/api";
+import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+type Member = {
+  userId: string;
+  username: string;
+  role: string;
+};
+
+type Team = {
+  _id: string;
+  teamName: string;
+  members: Member[];
+};
+
+type DropdownItem = {
+  label: string;
+  value: string;
+};
 
 interface BtnInfo {
   label: string;
   title: string;
 }
 
-const btnInfos: BtnInfo[] = [
-  { label: "Assign To", title: "Select Member" },
-  { label: "Priority", title: "Select Priority" },
-  { label: "Deadline", title: "Select Deadline" },
-];
+// const btnInfos: BtnInfo[] = [
+//   { label: "Assign To", title: "Select Member" },
+//   { label: "Priority", title: "Select Priority" },
+//   { label: "Deadline", title: "Select Deadline" },
+// ];
 
-const taskPriorityLabels = [
-  { label: "Low" },
-  { label: "Medium" },
-  { label: "High" },
-];
+// const taskPriorityLabels = [
+//   { label: "Low" },
+//   { label: "Medium" },
+//   { label: "High" },
+// ];
 
 const CreateTaskScreen = () => {
-  // const [modalVisible, setModalVisible] = useState(false);
+  const router = useRouter();
+
+  // Task Information
+  const [taskName, setTaskName] = useState("");
+  const [taskDescription, setTaskDescription] = useState("");
+
+  // const [members, setMembers] = useState<Member[]>([]);
+  // Assign To Dropdown
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
-  const [items, setItems] = useState([
-    { label: "English", value: "en" },
-    { label: "Deutsch", value: "de" },
-    { label: "French", value: "fr" },
-  ]);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [items, setItems] = useState<DropdownItem[]>([]);
+
+  useEffect(() => {
+    const teamsInfo = async () => {
+      const teamId = await AsyncStorage.getItem("currentTeamId");
+
+      if (!teamId) return;
+
+      try {
+        const teams = await api.get(`/teams/${teamId}`);
+
+        const memberData = teams.data.members
+          .filter((member: Member) => member.role === "Member")
+          .map((member: Member) => ({
+            label: member.username,
+            value: member.userId,
+          }));
+
+        setItems(memberData);
+        // setMembers(teams.data.members);
+      } catch (error) {
+        console.log("Error call API:", error);
+      }
+    };
+    teamsInfo();
+  }, []);
+
+  // console.log(members);
+
+  // Priority Dropdown
   const [openPriority, setOpenPriority] = useState(false);
-  const [valuePriority, setValuePriority] = useState(null);
+  const [priority, setValuePriority] = useState(null);
   const [itemsPriority, setItemsPriority] = useState([
-    { label: "Low", value: "low" },
-    { label: "Medium", value: "medium" },
-    { label: "High", value: "high" },
+    { label: "Low", value: "Low" },
+    { label: "Medium", value: "Medium" },
+    { label: "High", value: "High" },
   ]);
 
   // const showModal = () => setModalVisible(true);
@@ -94,6 +146,39 @@ const CreateTaskScreen = () => {
   const dateString = date.toLocaleDateString();
   const timeString = date.toLocaleTimeString();
 
+  const handleCreateTask = async () => {
+    const id = await AsyncStorage.getItem("userId");
+    const teamId = await AsyncStorage.getItem("currentTeamId");
+
+    try {
+      // Kết hợp date và time vào deadline
+      const combinedDeadline = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds()
+      );
+
+      const deadline = combinedDeadline.toISOString();
+      const assignToArray = userId ? [userId] : [];
+      // console.log(assignToArray);
+
+      await api.post(`/tasks/create/?id=${id}&teamId=${teamId}`, {
+        taskName,
+        taskDescription,
+        assignTo: assignToArray,
+        priority,
+        deadline,
+      });
+
+      router.push("/(tabs)/(tasks)");
+    } catch (err) {
+      setError("Create task failed");
+    }
+  };
+
   return (
     // <ScrollView>
     <View>
@@ -131,10 +216,10 @@ const CreateTaskScreen = () => {
 
           <DropDownPicker
             open={open}
-            value={value}
+            value={userId}
             items={items}
             setOpen={setOpen}
-            setValue={setValue}
+            setValue={setUserId}
             setItems={setItems}
             placeholder="Select Member"
             style={btnStyles.container}
@@ -146,7 +231,7 @@ const CreateTaskScreen = () => {
 
           <DropDownPicker
             open={openPriority}
-            value={valuePriority}
+            value={priority}
             items={itemsPriority}
             setOpen={setOpenPriority}
             setValue={setValuePriority}
@@ -290,3 +375,7 @@ const modalStyles = StyleSheet.create({
     fontWeight: "500",
   },
 });
+function setError(arg0: string) {
+  throw new Error("Function not implemented.");
+}
+

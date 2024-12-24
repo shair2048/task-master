@@ -7,7 +7,8 @@ import {
   Text,
   Button,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import { MaterialIcons } from "@expo/vector-icons";
+import { IconProps } from "react-native-vector-icons/Icon";
 
 interface ActionButtonsProps {
   onEdit: () => void;
@@ -27,7 +28,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ onEdit, onDelete }) => {
     <View style={styles.container}>
       {/* Nút Edit */}
       <TouchableOpacity style={styles.editButton} onPress={onEdit}>
-        <Icon name="edit" size={20} color="white" />
+        <MaterialIcons name="edit" size={20} color="white" />
       </TouchableOpacity>
 
       {/* Nút Delete */}
@@ -35,7 +36,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ onEdit, onDelete }) => {
         style={styles.deleteButton}
         onPress={() => setIsConfirmVisible(true)}
       >
-        <Icon name="delete" size={20} color="white" />
+        <MaterialIcons name="delete" size={20} color="white" />
       </TouchableOpacity>
 
       {/* Modal xác nhận */}

@@ -37,11 +37,11 @@ export default function RootLayout() {
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
 
-  // useEffect(() => {
-  //   if (!isLoggedIn) {
-  //     router.push("/sign-in");
-  //   }
-  // }, [isLoggedIn]);
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push("/sign-in");
+    }
+  }, [isLoggedIn]);
 
   const checkAuthStatus = async (callback: (id: string) => void) => {
     const token = await AsyncStorage.getItem("authToken");
@@ -94,7 +94,7 @@ export default function RootLayout() {
                   <DefaultAvatar />
 
                   <View style={textStyles.baseText}>
-                    <Text style={textStyles.nameFont}>Tonald Drump</Text>
+                    <Text style={textStyles.nameFont}>newUsername</Text>
                     <Text style={textStyles.roleFont}>Admin</Text>
                   </View>
                 </TouchableOpacity>
@@ -190,8 +190,8 @@ export default function RootLayout() {
         options={{
           header: () => (
             <SafeAreaView>
-              <CustomHeader title="Project Info" />
-              </SafeAreaView>
+              <CustomHeader title="Create New Team" />
+            </SafeAreaView>
           ),
         }}
       />

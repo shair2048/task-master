@@ -1,17 +1,74 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CalendarFillIcon from "../assets/images/calendar-fill-icon.svg";
+import { useLocalSearchParams } from "expo-router";
+import api from "@/api";
 
 const TaskDetailScreen = () => {
+  // const router = useRouter();
+  const params = useLocalSearchParams();
+
+  type Task = {
+    _id: string;
+    taskName: string;
+    taskDescription: string;
+    priority: string;
+    deadline: string;
+    taskStatus: string;
+    createdAt: string;
+  };
+
+  const labels = ["To do", "In Progress", "Done"];
+
+  const taskId = params.id;
+  const [task, setTask] = useState<Task>();
+  useEffect(() => {
+    const fetchTask = async () => {
+      if (taskId) {
+        try {
+          const response = await api.get(`/tasks/${taskId}`);
+          // console.log(response.data);
+
+          setTask(response.data);
+        } catch (error) {
+          console.error("Error fetching task:", error);
+        }
+      }
+    };
+    fetchTask();
+  }, [taskId]);
+
+  const handlePress = async () => {
+    setTask((prevStatus) => {
+      if (!prevStatus) return;
+
+      const currentIndex = labels.indexOf(prevStatus.taskStatus);
+      const nextIndex = (currentIndex + 1) % labels.length;
+      const nextStatus = labels[nextIndex];
+
+      updateTaskStatus(prevStatus._id, nextStatus);
+
+      // Cập nhật trạng thái cục bộ
+      return { ...prevStatus, taskStatus: nextStatus };
+    });
+  };
+
+  const updateTaskStatus = async (taskId: string, status: string) => {
+    try {
+      await api.put(`/tasks/${taskId}`, { taskStatus: status });
+      // console.log(`Task ${taskId} status updated to ${status}`);
+    } catch (error) {
+      console.error("Error updating task status:", error);
+    }
+  };
+
   return (
     <View style={taskDetailScreenStyles.container}>
       <View>
         <View style={taskDetailScreenStyles.taskLabel}>
-          <Text style={taskDetailScreenStyles.taskTitle}>
-            Wiring Dashboard Analytics
-          </Text>
-          <TouchableOpacity>
-            <Text style={taskDetailScreenStyles.taskTag}>In Progress</Text>
+          <Text style={taskDetailScreenStyles.taskTitle}>{task?.taskName}</Text>
+          <TouchableOpacity onPress={handlePress}>
+            <Text style={taskDetailScreenStyles.taskTag}>{task?.taskStatus}</Text>
           </TouchableOpacity>
         </View>
 

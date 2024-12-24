@@ -32,15 +32,10 @@ const AccountRow = ({ account }: { account: Account }) => {
     router.push(`/(user-detail)/${account._id}`);
   }, [router, account._id]);
 
-  const handleEdit = async () => {
-    try {
-      const updatedAccount = { username: "newUsername" }; // Cập nhật dữ liệu tài khoản
-      const response = await api.put(`/account/${account._id}`, updatedAccount);
-      console.log("Updated account:", response);
-    } catch (error) {
-      console.error("Error editing account", error);
-    }
+  const handleEdit = async (userId: string) => {
+    router.push(`/create-user?id=${userId}`);
   };
+  
   
   const handleDelete = async () => {
     try {
@@ -62,7 +57,7 @@ const AccountRow = ({ account }: { account: Account }) => {
       <Text style={styles.cell}>{new Date(account.updatedAt).toLocaleDateString()}</Text>
       <View style={styles.cell}>
         <ActionButtons
-          onEdit={handleEdit}
+          onEdit={() => handleEdit(account._id)}
           onDelete={handleDelete}
         />
       </View>

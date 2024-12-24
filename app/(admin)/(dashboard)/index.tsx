@@ -5,6 +5,7 @@ import ActionButtons from "@/components/btn-optiton";
 import { router, useRouter } from "expo-router";
 import { Dimensions, FlatList, ScrollView, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity } from "react-native";
 import { BarChart } from "react-native-chart-kit";
+import React from "react";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -76,17 +77,58 @@ const handleGetTasks = async () => {
   }
 }
 
+const handleGetUserById = async (userId: string) => {
+  try {
+    const response = await api.get(`/account/${userId}`);
+    return response.data || null;
+  } catch (error) {
+    console.error("Fetch user error", error);
+    return null;
+  }
+};
+
+const handleGetTeamById = async (teamId: string) => {
+  try {
+    const response = await api.get(`/teams/${teamId}`);
+    return response.data || null;
+  } catch (error) {
+    console.error("Fetch team error", error);
+    return null;
+  }
+};
+
 const TeamItem = ({ team }: { team: Team }) => {
-  const router = useRouter(); // Gọi hook trong component con
+  const router = useRouter();
+  const [leaderName, setLeaderName] = useState<string>("");
+
+  // Tìm leader
   const leader = team.members.find((member) => member.role === "Leader");
+
+  useEffect(() => {
+    const fetchLeaderName = async () => {
+      if (leader?.userId) {
+        try {
+          const response = await api.get(`/account/${leader.userId}`);
+          setLeaderName(response.data.username || "Unknown");
+        } catch (error) {
+          console.error("Failed to fetch leader's username", error);
+          setLeaderName("Unknown");
+        }
+      }
+    };
+
+    fetchLeaderName();
+  }, [leader?.userId]);
 
   const handleNavigateToTeamDetail = useCallback(() => {
     router.push(`/(team-detail)/${team._id}`);
   }, [router, team._id]);
 
   const handleNavigateToUserDetail = useCallback(() => {
-    router.push(`/(user-detail)/${leader?.userId}`);
-  }, [router, team._id]);
+    if (leader?.userId) {
+      router.push(`/(user-detail)/${leader.userId}`);
+    }
+  }, [router, leader?.userId]);
 
   return (
     <View style={styles.tableRow}>
@@ -95,49 +137,63 @@ const TeamItem = ({ team }: { team: Team }) => {
       </TouchableOpacity>
       <Text style={styles.tableCell}>{team.members.length || 0}</Text>
       <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToUserDetail}>
-        <Text style={styles.tableCell}>{leader?.username || "No leader"}</Text>
+        <Text style={styles.tableCell}>{leaderName || "No leader"}</Text>
       </TouchableOpacity>
       <Text style={styles.tableCell}>{new Date(team.createdAt).toLocaleDateString()}</Text>
     </View>
   );
 };
 
+
 const TaskItem = ({ task }: { task: Task }) => {
   const router = useRouter();
+  const [user, setUser] = useState<{ _id: string; username: string } | null>(null);
+  const [team, setTeam] = useState<{ _id: string; teamName: string } | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const userResponse = await handleGetUserById(task.createdBy.userId);
+      const teamResponse = await handleGetTeamById(task.teams.teamId);
+      setUser(userResponse);
+      setTeam(teamResponse);
+    };
+
+    fetchData();
+  }, [task]);
 
   const handleNavigateToTaskDetail = useCallback(() => {
     router.push(`/(task-detail)/${task._id}`);
   }, [router, task._id]);
 
   const handleNavigateToUserDetail = useCallback(() => {
-    router.push(`/(user-detail)/${task.createdBy.userId}`);
-  }, [router, task._id]);
+    if (user) {
+      router.push(`/(user-detail)/${user._id}`);
+    }
+  }, [router, user]);
 
   const handleNavigateToTeamDetail = useCallback(() => {
-    if (task.teams) {
-      router.push(`/(team-detail)/${task.teams.teamId}`);
+    if (team) {
+      router.push(`/(team-detail)/${team._id}`);
     }
-  }, [router, task._id]);
+  }, [router, team]);
 
   return (
     <View style={styles.tableRow}>
-      <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToTaskDetail}>
-        <Text style={styles.tableCell}>{task.taskName || "Unnamed Task"}</Text>
-      </TouchableOpacity>
+      <Text style={styles.tableCell}>{task.taskName || "Unnamed Task"}</Text>
       <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToUserDetail}>
-      <Text style={styles.tableCell}>{task.createdBy.username || "Unname"}</Text>
+        <Text style={styles.tableCell}>{user ? user.username : ""}</Text>
       </TouchableOpacity>
       <Text style={styles.tableCell}>{task.assignTo.length || 0}</Text>
       <Text style={styles.tableCell}>{task.priority || "Unknown"}</Text>
       <Text style={styles.tableCell}>{task.taskStatus || "Unknown"}</Text>
       <TouchableOpacity style={styles.tableCell} onPress={handleNavigateToTeamDetail}>
-        <Text style={styles.tableCell}>{task.teams ? task.teams.teamName : "Unknown"}</Text>
+        <Text style={styles.tableCell}>{team ? team.teamName : "No Team"}</Text>
       </TouchableOpacity>
       <Text style={styles.tableCell}>{new Date(task.createdAt).toLocaleDateString()}</Text>
       <Text style={styles.tableCell}>{new Date(task.deadline).toLocaleDateString()}</Text>
     </View>
   );
-}
+};
 
 const titleStatusCount = (tasks: Task[], tags: Tag[]) => {
   const tagMap: { [key: string]: number } = {};
@@ -190,7 +246,8 @@ const CurrentTask = ({ tasks }: { tasks: Task[] }) => {
   };
 
   return (
-    <><View style={styles.section}>
+    <>
+    {/* <View style={styles.section}>
       <Text style={styles.sectionTitle}>Summary of Work</Text>
       <Text style={styles.sectionSubtitle}>Current task progress</Text>
       <View style={styles.tagsContainer}>
@@ -201,7 +258,8 @@ const CurrentTask = ({ tasks }: { tasks: Task[] }) => {
           </View>
         ))}
       </View>
-    </View><View style={styles.section}>
+    </View> */}
+    <View style={styles.section}>
         <Text style={styles.sectionTitle}>Task Priorities</Text>
         <Text style={styles.sectionSubtitle}>Current task priorities</Text>
         <BarChart
@@ -214,7 +272,7 @@ const CurrentTask = ({ tasks }: { tasks: Task[] }) => {
           showBarTops={false}
           yAxisLabel=""
           yAxisSuffix="" />
-</View></>
+      </View></>
     
   );
 };
@@ -281,7 +339,7 @@ const DashboardScreen = () => {
 
           {/* Tasks Section */}
           <View style={wrapContainerStyles.containerItem}>              
-              <Text style={styles.sectionTitle}>Tasks Near Deadline</Text>
+              <Text style={styles.sectionTitle}>Tasks</Text>
               <View style={styles.table}>
                 <View style={styles.tableRow}>
                   <Text style={styles.tableHeader}>Task Name</Text>
