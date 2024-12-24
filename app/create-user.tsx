@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,19 +7,39 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import { useRouter } from "expo-router"; 
+import { useSearchParams } from "expo-router/build/hooks";
+import api from "@/api";
 
 const CreateUserScreen = () => {
-
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
   const [user, setUser] = useState({
-    id: "",
-    name: "",
-    account_name: "",
-    date_of_birth: "",
-    phone_number: "",
-    address: "",
-    s_role: "",
+    _id: "",
+    username: "",
+    email: "",
+    password: "",
+    role: "",
+    workspaceType: "",
+    teams: [],
   });
+
+  const fetchUserData = async (userId: string) => {
+    try {
+      const response = await api.get(`/account/${userId}`);
+      setUser(response.data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchUserData(id);
+    }
+  }, [id]);
 
   const handleInputChange = (field: keyof typeof user, value: string) => {
     setUser((prev) => ({
@@ -28,67 +48,61 @@ const CreateUserScreen = () => {
     }));
   };
 
+  const handleSubmit = async () => {
+    try {
+      if (id) {
+        // Cập nhật thông tin tài khoản
+        await api.put(`/account/${id}`, user);
+        console.log("User updated successfully");
+      } else {
+        await api.post(`/account`, user);
+        console.log("User created successfully");
+      }
+      router.push("/(admin)/(users)"); // Quay lại danh sách tài khoản
+    } catch (error) {
+      console.error("Error submitting user data:", error);
+    }
+  };
+
+  if (!user && id) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading user data...</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-
       <View>
-        <Text style={styles.label}>ID</Text>
+        <Text style={styles.label}>Username</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter ID"
-          value={user.id}
-          onChangeText={(value) => handleInputChange("id", value)}
+          placeholder="Enter Username"
+          value={user.username}
+          onChangeText={(value) => handleInputChange("username", value)}
         />
       </View>
 
       <View>
-        <Text style={styles.label}>Name</Text>
+        <Text style={styles.label}>Email</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter Name"
-          value={user.name}
-          onChangeText={(value) => handleInputChange("name", value)}
+          placeholder="Enter Email"
+          keyboardType="email-address"
+          value={user.email}
+          onChangeText={(value) => handleInputChange("email", value)}
         />
       </View>
 
       <View>
-        <Text style={styles.label}>Account Name</Text>
+        <Text style={styles.label}>Password</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter Account Name"
-          value={user.account_name}
-          onChangeText={(value) => handleInputChange("account_name", value)}
-        />
-      </View>
-
-      <View>
-        <Text style={styles.label}>Date of Birth</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="YYYY-MM-DD"
-          value={user.date_of_birth}
-          onChangeText={(value) => handleInputChange("date_of_birth", value)}
-        />
-      </View>
-
-      <View>
-        <Text style={styles.label}>Phone Number</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Phone Number"
-          keyboardType="phone-pad"
-          value={user.phone_number}
-          onChangeText={(value) => handleInputChange("phone_number", value)}
-        />
-      </View>
-
-      <View>
-        <Text style={styles.label}>Address</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Address"
-          value={user.address}
-          onChangeText={(value) => handleInputChange("address", value)}
+          placeholder="Enter Password"
+          secureTextEntry
+          value={user.password}
+          onChangeText={(value) => handleInputChange("password", value)}
         />
       </View>
 
@@ -97,12 +111,22 @@ const CreateUserScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Enter Role"
-          value={user.s_role}
-          onChangeText={(value) => handleInputChange("s_role", value)}
+          value={user.role}
+          onChangeText={(value) => handleInputChange("role", value)}
         />
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <View>
+        <Text style={styles.label}>Workspace Type</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Workspace Type"
+          value={user.workspaceType}
+          onChangeText={(value) => handleInputChange("workspaceType", value)}
+        />
+      </View>
+
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -115,12 +139,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: "#F9FAFB",
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 16,
-    textAlign: "center",
   },
   label: {
     fontSize: 14,
@@ -146,5 +164,10 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "600",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

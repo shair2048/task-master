@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useEffect } from "react";
+import React, { useState, useLayoutEffect, useEffect, useCallback } from "react";
 import { Text, View, StyleSheet, TouchableOpacity, FlatList, useWindowDimensions, ScrollView } from "react-native";
 import { useSearchParams } from "expo-router/build/hooks";
 import { useNavigation } from "@react-navigation/native";
@@ -7,6 +7,7 @@ import BlockButton from "@/components/btn-block";
 import { router } from "expo-router";
 import api from "@/api";
 import { Use } from "react-native-svg";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Account {
   _id: string;
@@ -17,6 +18,15 @@ interface Account {
   createdAt: string;
   updatedAt: string;
 }
+
+interface Team {
+  _id: string;
+  teamName: string;
+  members: any[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 
 const handleGetAccountById = async (id: string) => {
   try {
@@ -29,17 +39,22 @@ const handleGetAccountById = async (id: string) => {
 }
 
 const UserCard = ({ user }: { user: Account }) => {
-  const handleEdit = () => {
-    router.push(`/create-user`);
+  const handleEdit = async (userId: string) => {
+    router.push(`/create-user?id=${userId}`);
   };
 
-  const handleDelete = () => {
-    console.log(`Delete user ${user.username}`);
+  const handleDelete = async () => {
+    try {
+      const response = await api.delete(`/account/${user._id}`);
+      console.log("Deleted account:", response);
+    } catch (error) {
+      console.error("Error deleting account", error);
+    }
   };
 
-  const handleBlock = () => {
-    console.log(`Block user ${user.username}`);
-  };
+  // const handleBlock = () => {
+  //   console.log(`Block user ${user.username}`);
+  // };
 
   return (
       <View style={styles.card}>
@@ -48,14 +63,14 @@ const UserCard = ({ user }: { user: Account }) => {
             <Text style={UserStyles.title}>{user.username}</Text>
             <Text style={UserStyles.description}>{user.email}</Text>
           </View>
-          <ActionButtons onEdit={handleEdit} onDelete={handleDelete} />
-          <BlockButton onBlock={handleBlock} />
+          <ActionButtons onEdit={() => handleEdit(user._id)} onDelete={handleDelete} />
+          {/* <BlockButton onBlock={handleBlock} /> */}
         </View>
 
         <View style={UserStyles.body}>
           <Text style={styles.userDetails}>Role: {user.role}</Text>
           <Text style={styles.userDetails}>
-            Teams: {user.teams?.length > 0 ? user.teams.join(", ") : "None"}
+            Teams: {user.teams?.length}
           </Text>
           <Text style={styles.userDetails}>
             Created at: {new Date(user.createdAt).toLocaleDateString()}
@@ -66,7 +81,7 @@ const UserCard = ({ user }: { user: Account }) => {
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.taskCount}>{user.teams.length} Teams, {} Task</Text>
+          {/* <Text style={styles.taskCount}>{user.teams.length} Teams, {} Task</Text> */}
         </View>
       </View>
   );
@@ -86,87 +101,64 @@ const UserView = ({ user }: { user: Account }) => {
   );
 };
 
+const renderTeamsTable = (teams: Team[]) => {
+  const [leaderName, setLeaderName] = useState<string>("");
 
-type Project = {
-  id: string;
-  id_user: string;
-  name: string;
-  description: string;
-  progress: number;
-  members: number;
-  tasks: number;
-  startDate: string;
-  endDate: string;
-};
+  // Tìm leader
+  const leader = teams.flatMap(team => team.members).find((member) => member.role === "Leader");
 
-type Task = {
-  id: string;
-  id_project: string;
-  name: string;
-  description: string;
-  assignee: string;
-  progress: string;
-  priority: string;
-  startDate: string;
-  endDate: string;
-};
+  useEffect(() => {
+    const fetchLeaderName = async () => {
+      if (leader?.userId) {
+        try {
+          const response = await api.get(`/account/${leader.userId}`);
+          setLeaderName(response.data.username || "Unknown");
+        } catch (error) {
+          console.error("Failed to fetch leader's username", error);
+          setLeaderName("Unknown");
+        }
+      }
+    };
 
-const projects: Project[] = [
-  { id: "1", id_user: "675918e6de74dc7dfc6fc53a", name: "First Project", description: "Details about your project", progress: 33, members: 3, tasks: 3, startDate: "2024-11-01", endDate: "2024-11-30" },
-  { id: "2", id_user: "675918e6de74dc7dfc6fc53a", name: "Second Project", description: "More details about this project", progress: 75, members: 6, tasks: 10, startDate: "2024-12-01", endDate: "2024-12-15" },
-];
+    fetchLeaderName();
+  }, [leader?.userId]);
 
-const tasks: Task[] = [
-  { id: "1", id_project: "1", name: "Design UI", description: "Create user interface designs", assignee: "John Doe", progress: "to do", priority: "High", startDate: "2024-12-01", endDate: "2024-12-10" },
-  { id: "2", id_project: "1", name: "Develop Backend", description: "Set up backend APIs", assignee: "Jane Smith", progress: "in process", priority: "Medium", startDate: "2024-12-05", endDate: "2024-12-20" },
-];
-
-// Component to render tasks for a specific project
-const TaskList = ({ projectId }: { projectId: string }) => {
-  const filteredTasks = tasks.filter((task) => task.id_project === projectId);
+  const handleNavigateToTeamDetail = useCallback((teamId: string) => {
+      router.push(`/(team-detail)/${teamId}`);
+    }, [router]);
+  const handleNavigateToUserDetail = useCallback(() => {
+    router.push(`/(user-detail)/${leader?.userId}`);
+  }, [router, leader?.userId]);
 
   return (
     <View style={Tablestyles.table}>
       {/* Header */}
       <View style={Tablestyles.tableHeader}>
-        <Text style={Tablestyles.headerCell}>Name</Text>
-        <Text style={Tablestyles.headerCell}>Description</Text>
-        <Text style={Tablestyles.headerCell}>Assignee</Text>
-        <Text style={Tablestyles.headerCell}>Progress</Text>
-        <Text style={Tablestyles.headerCell}>Priority</Text>
-        <Text style={Tablestyles.headerCell}>Start Date</Text>
-        <Text style={Tablestyles.headerCell}>End Date</Text>
-        <Text style={Tablestyles.headerCell}>Options</Text>
+        <Text style={Tablestyles.headerCell}>Team Name</Text>
+        <Text style={Tablestyles.headerCell}>Members</Text>
+        <Text style={Tablestyles.headerCell}>Leader</Text>
+        <Text style={Tablestyles.headerCell}>Create At</Text>
+        <Text style={Tablestyles.headerCell}>Update At</Text>
       </View>
 
       {/* Rows */}
-      {filteredTasks.length > 0 ? (
-        <FlatList
-          data={filteredTasks}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={Tablestyles.row}>
-              <Text style={Tablestyles.cell}>{item.name}</Text>
-              <Text style={Tablestyles.cell}>{item.description}</Text>
-              <Text style={Tablestyles.cell}>{item.assignee}</Text>
-              <Text style={Tablestyles.cell}>{item.progress}</Text>
-              <Text style={Tablestyles.cell}>{item.priority}</Text>
-              <Text style={Tablestyles.cell}>{item.startDate}</Text>
-              <Text style={Tablestyles.cell}>{item.endDate}</Text>
-              <Text style={Tablestyles.cell}>
-                <ActionButtons
-                  onEdit={() => router.push(`/create-user`)}
-                  onDelete={() => console.log(`Delete task ${item.name}`)}
-                />
-              </Text>
-            </View>
-          )}
-        />
-      ) : (
-        <Text style={{ textAlign: "center", padding: 10, color: "#888" }}>
-          No tasks available for this project.
-        </Text>
-      )}
+      <FlatList
+        data={teams}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <View style={Tablestyles.row}>
+            <TouchableOpacity style={Tablestyles.cell} onPress={() => handleNavigateToTeamDetail(item._id)}>
+                    <Text style={Tablestyles.cell}>{item.teamName || "Unnamed Team"}</Text>
+                  </TouchableOpacity>
+            <Text style={Tablestyles.cell}>{item.members.length}</Text>
+            <TouchableOpacity style={Tablestyles.cell} onPress={handleNavigateToUserDetail}>
+              <Text style={Tablestyles.cell}>{leaderName || "No leader"}</Text>
+            </TouchableOpacity>
+            <Text style={Tablestyles.cell}>{new Date(item.createdAt).toLocaleDateString()}</Text>
+            <Text style={Tablestyles.cell}>{new Date(item.updatedAt).toLocaleDateString()}</Text>
+          </View>
+        )}
+      />
     </View>
   );
 };
@@ -174,29 +166,28 @@ const TaskList = ({ projectId }: { projectId: string }) => {
 
 // Component to render projects with dropdown
 const ProjectList = ({ userId }: { userId: string }) => {
-  const userProjects = projects.filter((project) => project.id_user === userId);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
   const { width } = useWindowDimensions(); 
   const isSmallScreen = width < 500;
 
-  const toggleDropdown = (projectId: string) => {
-    setExpanded(expanded === projectId ? null : projectId);
-  };
+  useEffect(() => {
+    const teamsInfo = async () => {
+
+      try {
+        const response = await api.get(`/teams/user/${userId}`);
+        setTeams(response.data);
+      } catch (error) {
+        console.log("Error call API:", error);
+      }
+    };
+    teamsInfo();
+  }, [userId]);
 
   return (
-    <View>
-      {userProjects.map((project) => (
-        <View key={project.id} style={styles.card}>
-          <TouchableOpacity onPress={() => toggleDropdown(project.id)} style={styles.projectHeader}>
-            <Text style={styles.projectTitle}>{project.name}</Text>
-            <Text style={styles.projectDescription}>{project.description}</Text>
-          </TouchableOpacity>
-          <ScrollView horizontal={isSmallScreen}>
-            {expanded === project.id && <TaskList projectId={project.id} />}
-          </ScrollView>
-        </View>
-      ))}
-    </View>
+    <ScrollView horizontal={isSmallScreen}>
+              {renderTeamsTable(teams)} {/* Pass tasks directly as prop */}
+            </ScrollView>
   );
 };
 

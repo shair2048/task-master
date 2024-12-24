@@ -26,8 +26,25 @@ interface Teams {
 
 const TeamRow = ({team}: { team: Teams}) => {
   const router = useRouter();
-
+  const [leaderName, setLeaderName] = useState<string>("");
+  // Tìm leader
   const leader = team.members.find((member) => member.role === "Leader");
+
+  useEffect(() => {
+    const fetchLeaderName = async () => {
+      if (leader?.userId) {
+        try {
+          const response = await api.get(`/account/${leader.userId}`);
+          setLeaderName(response.data.username || "Unknown");
+        } catch (error) {
+          console.error("Failed to fetch leader's username", error);
+          setLeaderName("Unknown");
+        }
+      }
+    };
+
+    fetchLeaderName();
+  }, [leader?.userId]);
   
     const handleNavigateToTeamDetail = useCallback(() => {
       router.push(`/(team-detail)/${team._id}`);
@@ -44,7 +61,7 @@ const TeamRow = ({team}: { team: Teams}) => {
       </TouchableOpacity>
       <Text style={styles.cell}>{team.members.length || 0}</Text>
       <TouchableOpacity style={styles.cell} onPress={handleNavigateToUserDetail}>
-        <Text style={styles.cell}>{leader?.username || "No leader"}</Text>
+        <Text style={styles.cell}>{leaderName || "No leader"}</Text>
       </TouchableOpacity>
       <Text style={styles.cell}>{new Date(team.createdAt).toLocaleDateString()}</Text>
       <Text style={styles.cell}>{new Date(team.updatedAt).toLocaleDateString()}</Text>

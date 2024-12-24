@@ -1,10 +1,11 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Text, View, StyleSheet, TouchableOpacity, FlatList, useWindowDimensions, ScrollView } from "react-native";
 import { router, SearchParams } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import { useSearchParams } from "expo-router/build/hooks";
 import ActionButtons from "@/components/btn-optiton";
 import api from "@/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 interface Team {
@@ -14,6 +15,25 @@ interface Team {
   createdAt: string;
   updatedAt: string;
 }
+
+type Task = {
+  _id: string;
+  taskName: string;
+  taskStatus: string;
+  priority: string;
+  deadline: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type Member = {
+  _id: string;
+  username: string;
+  email: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
 const handleGetTeamById = async (id: string) => {
   try {
@@ -26,15 +46,25 @@ const handleGetTeamById = async (id: string) => {
 }
 
 const TeamCard = ({ team }: { team: Team }) => {
+  const [leaderName, setLeaderName] = useState<string>("");
+  // Tìm leader
   const leader = team.members.find((member) => member.role === "Leader");
-  const member = team.members.map(member => member.username);
-  const handleEdit = () => {
-    console.log(`Edit team ${team.teamName}`);
-  };
 
-  const handleDelete = () => {
-    console.log(`Delete team ${team.teamName}`);
-  };
+  useEffect(() => {
+    const fetchLeaderName = async () => {
+      if (leader?.userId) {
+        try {
+          const response = await api.get(`/account/${leader.userId}`);
+          setLeaderName(response.data.username || "Unknown");
+        } catch (error) {
+          console.error("Failed to fetch leader's username", error);
+          setLeaderName("Unknown");
+        }
+      }
+    };
+
+    fetchLeaderName();
+  }, [leader?.userId]);
 
   return (
     <View style={styles.card}>
@@ -42,13 +72,12 @@ const TeamCard = ({ team }: { team: Team }) => {
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{team.teamName}</Text>
         </View>
-        <ActionButtons onEdit={handleEdit} onDelete={handleDelete} />
       </View>
 
       <View style={styles.body}>
-      <Text style={styles.userDetails}>{leader?.username || "No leader"}</Text>
+      <Text style={styles.userDetails}>Leader: {leaderName || "No leader"}</Text>
         <Text style={styles.userDetails}>
-          Members: {team.members.length > 0? member.join(", "): "None"}
+          Members: {team.members.length}
         </Text>
         <Text style={styles.userDetails}>
           Created at: {new Date(team.createdAt).toLocaleDateString()}
@@ -59,7 +88,7 @@ const TeamCard = ({ team }: { team: Team }) => {
       </View>
 
       <View style={styles.footer}>
-      <Text style={styles.taskCount}>{} Tasks, {team.members.length} Members </Text>
+      {/* <Text style={styles.taskCount}>{} Tasks, {team.members.length} Members </Text> */}
       </View>
     </View>
   );
@@ -83,107 +112,33 @@ type TeamTab = {
   title: string;
 };
 
-const tasks = [
-  {
-    id: "1",
-    id_team: "67597e34e46d92e2f35981d5",
-    name: "Design UI",
-    description: "Create user interface designs for the app",
-    assignee: "John Doe",
-    progress: "to do",
-    priority: "High",
-    startDate: "2024-12-01",
-    endDate: "2024-12-10",
-  },
-  {
-    id: "2",
-    id_team: "67597e34e46d92e2f35981d5",
-    name: "Develop Backend",
-    description: "Set up backend APIs",
-    assignee: "Jane Smith",
-    progress: "in process",
-    priority: "Medium",
-    startDate: "2024-12-05",
-    endDate: "2024-12-20",
-  },
-  {
-    id: "3",
-    id_team: "67597e34e46d92e2f35981d5",
-    name: "Develop Backend",
-    description: "Set up environment",
-    assignee: "Reed Miles",
-    progress: "in process",
-    priority: "Medium",
-    startDate: "2024-12-05",
-    endDate: "2024-12-20",
-  },
-];
-
-const members = [
-  {
-    id: "1",
-    id_team: "67597e34e46d92e2f35981d5",
-    name: "John Doe",
-    age: 28,
-    task: "Design UI",
-    role: "Leader",
-  },
-  {
-    id: "2",
-    id_team: "67597e34e46d92e2f35981d5",
-    name: "Jane Smith",
-    age: 30,
-    task: "Develop Backend",
-    role: "Personal",
-  },
-  {
-    id: "3",
-    id_team: "67597e34e46d92e2f35981d5",
-    name: "Reed Miles",
-    age: 26,
-    task: "Develop Backend",
-    role: "Personal",
-  },
-];
 
 
-const renderTasksTable = (id_team: string) => {
-  const filteredTasks = tasks.filter((task) => task.id_team === id_team);
-
-  const handleEdit = () => {
-    router.push(`/create-task`);
-  };
-
-  const handleDelete = () => {
-    console.log(`Delete team ${filteredTasks.map(task => task.name).join(', ')}`);
-  };
-
+const renderTasksTable = (tasks: Task[]) => {
   return (
     <View style={Tablestyles.table}>
       {/* Header */}
       <View style={Tablestyles.tableHeader}>
         <Text style={Tablestyles.headerCell}>Name</Text>
-        <Text style={Tablestyles.headerCell}>Description</Text>
-        <Text style={Tablestyles.headerCell}>Assignee</Text>
-        <Text style={Tablestyles.headerCell}>Progress</Text>
         <Text style={Tablestyles.headerCell}>Priority</Text>
-        <Text style={Tablestyles.headerCell}>Start Date</Text>
-        <Text style={Tablestyles.headerCell}>End Date</Text>
+        <Text style={Tablestyles.headerCell}>Status</Text>
+        <Text style={Tablestyles.headerCell}>Deadline</Text>
+        <Text style={Tablestyles.headerCell}>Created At</Text>
+        <Text style={Tablestyles.headerCell}>Updated At</Text>
       </View>
 
       {/* Rows */}
       <FlatList
-        data={filteredTasks}
-        keyExtractor={(item) => item.id}
+        data={tasks}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View style={Tablestyles.row}>
-            <Text style={Tablestyles.cell}>{item.name}</Text>
-            <Text style={Tablestyles.cell}>{item.description}</Text>
-            <Text style={Tablestyles.cell}>{item.assignee}</Text>
-            <Text style={Tablestyles.cell}>{item.progress}</Text>
+            <Text style={Tablestyles.cell}>{item.taskName}</Text>
             <Text style={Tablestyles.cell}>{item.priority}</Text>
-            <Text style={Tablestyles.cell}>{item.startDate}</Text>
-            <Text style={Tablestyles.cell}>{item.endDate}</Text>
+            <Text style={Tablestyles.cell}>{item.taskStatus}</Text>
+            <Text style={Tablestyles.cell}>{item.deadline}</Text>
+            <Text style={Tablestyles.cell}>{new Date(item.createdAt).toLocaleDateString()}</Text>
+            <Text style={Tablestyles.cell}>{new Date(item.updatedAt).toLocaleDateString()}</Text>
           </View>
         )}
       />
@@ -191,39 +146,31 @@ const renderTasksTable = (id_team: string) => {
   );
 };
 
-
-const renderMembersTable = (id_team: string) => {
-  const filteredMembers = members.filter((member) => member.id_team === id_team);
-
-  const handleEdit = () => {
-    router.push(`/create-user`);
-  };
-
-  const handleDelete = () => {
-    console.log(`Delete team ${filteredMembers.map(member => member.name).join(', ')}`);
-  };
-
+const renderMembersTable = (members: Member[], handleNavigateToUserDetail: (UserId: string) => void) => {
   return (
     <View style={Tablestyles.table}>
       {/* Header */}
       <View style={Tablestyles.tableHeader}>
-        <Text style={Tablestyles.headerCell}>Name</Text>
-        <Text style={Tablestyles.headerCell}>Age</Text>
-        <Text style={Tablestyles.headerCell}>Task</Text>
+        <Text style={Tablestyles.headerCell}>User Name</Text>
+        <Text style={Tablestyles.headerCell}>Email</Text>
         <Text style={Tablestyles.headerCell}>Role</Text>
-        <Text style={Tablestyles.headerCell}>Options</Text>
+        <Text style={Tablestyles.headerCell}>Created At</Text>
+        <Text style={Tablestyles.headerCell}>Updated At</Text>
       </View>
 
       {/* Rows */}
       <FlatList
-        data={filteredMembers}
-        keyExtractor={(item) => item.id}
+        data={members}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View style={Tablestyles.row}>
-            <Text style={Tablestyles.cell}>{item.name}</Text>
-            <Text style={Tablestyles.cell}>{item.age}</Text>
-            <Text style={Tablestyles.cell}>{item.task}</Text>
+            <TouchableOpacity style={Tablestyles.cell} onPress={() => handleNavigateToUserDetail(item._id)}>
+              <Text style={Tablestyles.cell}>{item.username || "Unnamed"}</Text>
+            </TouchableOpacity>
+            <Text style={Tablestyles.cell}>{item.email}</Text>
             <Text style={Tablestyles.cell}>{item.role}</Text>
+            <Text style={Tablestyles.cell}>{new Date(item.createdAt).toLocaleDateString()}</Text>
+            <Text style={Tablestyles.cell}>{new Date(item.updatedAt).toLocaleDateString()}</Text>
           </View>
         )}
       />
@@ -233,56 +180,72 @@ const renderMembersTable = (id_team: string) => {
 
 const TeamTab = ({ id_team }: { id_team: string }) => {
   const [selectedTab, setSelectedTab] = useState<number>(0);
-
-  const { width } = useWindowDimensions(); 
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
+  const { width } = useWindowDimensions();
   const isSmallScreen = width < 500;
 
-  const renderTabContent = () => {
-      if (selectedTab === 0) {
-          return ( 
-            <ScrollView horizontal={isSmallScreen}>
-                  {renderTasksTable(id_team)}
-            </ScrollView>
-          );
-      } else {
-        return ( 
-          <ScrollView horizontal={isSmallScreen}>
-                {renderMembersTable(id_team)}
-          </ScrollView>
-        );
+  const handleNavigateToUserDetail = useCallback((UserId: string) => {
+    router.push(`/(user-detail)/${UserId}`);
+  }, [router]);
+
+  useEffect(() => {
+    // Fetch tasks and members for the team
+    const fetchTeamData = async () => {
+      try {
+        const responseTasks = await api.get(`/tasks/workspace/${id_team}`);
+        setTasks(responseTasks.data);
+
+        // Assuming you fetch members for the team as well
+        const responseMembers = await api.get(`/account/team/${id_team}`);
+        setMembers(responseMembers.data);
+      } catch (error) {
+        console.error("Error fetching team data:", error);
       }
+    };
+
+    fetchTeamData();
+  }, [id_team]);
+
+  const renderTabContent = () => {
+    if (selectedTab === 0) {
+      return (
+        <ScrollView horizontal={isSmallScreen}>
+          {renderTasksTable(tasks)} {/* Pass tasks directly as prop */}
+        </ScrollView>
+      );
+    } else {
+      return (
+        <ScrollView horizontal={isSmallScreen}>
+          {renderMembersTable(members, handleNavigateToUserDetail)} {/* Pass handler directly */}
+        </ScrollView>
+      );
+    }
   };
 
   return (
-      <View style={styles.card}>
-          {/* Tabs */}
-          <View style={TabsStyles.container}>
-              {tabs.map((tab, index) => (
-                  <TouchableOpacity
-                      key={index}
-                      style={[
-                          TabsStyles.tabItem,
-                          selectedTab === index && TabsStyles.activeTab,
-                      ]}
-                      onPress={() => setSelectedTab(index)}
-                  >
-                      <Text
-                          style={[
-                              TabsStyles.tabTitle,
-                              selectedTab === index && TabsStyles.activeTab,
-                          ]}
-                      >
-                          {tab.title}
-                      </Text>
-                  </TouchableOpacity>
-              ))}
-          </View>
-
-          {/* Tab Content */}
-          <View>{renderTabContent()}</View>
+    <View style={styles.card}>
+      {/* Tabs */}
+      <View style={TabsStyles.container}>
+        {tabs.map((tab, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[TabsStyles.tabItem, selectedTab === index && TabsStyles.activeTab]}
+            onPress={() => setSelectedTab(index)}
+          >
+            <Text style={[TabsStyles.tabTitle, selectedTab === index && TabsStyles.activeTab]}>
+              {tab.title}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
+
+      {/* Tab Content */}
+      <View>{renderTabContent()}</View>
+    </View>
   );
 };
+
 
 
 const TeamDetail = () => {
