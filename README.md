@@ -1,5 +1,5 @@
 # Task Master App
-![NPM Version](https://img.shields.io/npm/v/node?label=node)
+![Version](https://img.shields.io/npm/v/node?label=node)
 
 ## Version notes
 
