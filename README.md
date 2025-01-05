@@ -1,5 +1,6 @@
 # Task Master App
-![Version](https://img.shields.io/npm/v/node?label=node)
+![Node Version](https://img.shields.io/github/package-json/v/shair2048/task-master)
+
 
 ## Version notes
 
