@@ -1,7 +1,6 @@
 # Task Master App
 ![Node.js](https://img.shields.io/badge/Node.js-v20.18.0-339933?logo=node.js&logoColor=white)
 ![Yarn](https://img.shields.io/badge/Yarn-1.22.22-2C8EBB?logo=yarn)
-![npm](https://img.shields.io/badge/npm-10.9.0-CB3837?logo=npm)
 ![Java](https://img.shields.io/badge/OpenJDK-17-007396?logo=openjdk)
 ![Android SDK](https://img.shields.io/badge/Android%20SDK-34-3DDC84?logo=android&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6.3-3178C6?logo=typescript&logoColor=white)
