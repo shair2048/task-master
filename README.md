@@ -1,4 +1,6 @@
 # Task Master App
+![Node Current](https://img.shields.io/node/v/node)
+
 
 ## Version notes
 
