@@ -1,5 +1,5 @@
 # Task Master App
-![Node Current](https://img.shields.io/node/v/node)
+![NPM Version](https://img.shields.io/badge/npm-10.9.0-green)
 ![Node Version](https://img.shields.io/badge/node-v20.18.0-green)
 
 
