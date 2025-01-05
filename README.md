@@ -6,14 +6,6 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6.3-3178C6?logo=typescript&logoColor=white)
 
 
-## Version notes
-
-- node: v20.18.0
-- npm: 10.9.0
-- Microsoft OpenJDK17 (Java SE Development Kit)
-- Android SDK Platform 34
-- TypeScript Compiler: 5.6.3
-
 ## Set up environment with EAS CLI
 
 ### Install EAS CLI. In terminal, run:
