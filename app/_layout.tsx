@@ -138,7 +138,7 @@ export default function RootLayout() {
                   </View>
                 </TouchableOpacity>
 
-                <View style={styles.container}>
+                {/* <View style={styles.container}>
                   <TouchableOpacity
                     onPress={() => {}}
                     style={{ marginRight: 26 }}
@@ -149,7 +149,7 @@ export default function RootLayout() {
                   <TouchableOpacity onPress={() => {}}>
                     <Notification />
                   </TouchableOpacity>
-                </View>
+                </View> */}
               </View>
             </SafeAreaView>
           ),

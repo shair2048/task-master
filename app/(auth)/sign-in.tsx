@@ -73,11 +73,20 @@ const SignInScreen = () => {
 
       switch (Platform.OS) {
         case "web":
-          if (role === "Individual") {
-            setMessage("Login failed");
+          if (role === "Admin") {
+            // setMessage("Login failed");
+            router.push("/(admin)");
+
             return;
+          } else {
+            await AsyncStorage.setItem("authToken", token);
+            await AsyncStorage.setItem("userId", uid);
+            router.push("/(tabs)");
           }
-          router.push("/(admin)");
+
+          // await AsyncStorage.setItem("authToken", token);
+          // await AsyncStorage.setItem("userId", uid);
+          // router.push("/(tabs)");
           break;
 
         case "android":

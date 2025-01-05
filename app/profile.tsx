@@ -1,11 +1,34 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import ProfileItems from "@/components/profile-items";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "@/api";
+
+type User = {
+  _id: string;
+  username: string;
+  email: string;
+};
 
 const ProfileScreen = () => {
   const router = useRouter();
+  const [user, setUser] = React.useState<User>();
+
+  useEffect(() => {
+    const userInfos = async () => {
+      const id = await AsyncStorage.getItem("userId");
+
+      try {
+        const response = await api.get(`/account/${id}`);
+        setUser(response.data);
+      } catch (error) {
+        console.error("Failed to fetch leader's username", error);
+      }
+    };
+
+    userInfos();
+  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -30,13 +53,13 @@ const ProfileScreen = () => {
           />
         </TouchableOpacity>
 
-        <Text style={profileScreenStyles.name}>Tonald Drump</Text>
-        <Text style={profileScreenStyles.roleName}>Personally</Text>
+        <Text style={profileScreenStyles.name}>{user?.username}</Text>
+        <Text style={profileScreenStyles.roleName}>Individual</Text>
       </View>
       <View style={{ gap: 8 }}>
         <Text style={profileScreenStyles.infoTitle}>ACCOUNT</Text>
         <View style={profileScreenStyles.accountInfo}>
-          <ProfileItems value="abc@gmail.com" onChangePress={() => {}} />
+          <ProfileItems value={user?.email ?? ""} onChangePress={() => {}} />
           <ProfileItems value="******" onChangePress={() => {}} />
         </View>
       </View>
