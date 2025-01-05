@@ -1,6 +1,9 @@
 # Task Master App
-![NPM Version](https://img.shields.io/badge/npm-10.9.0-green)
-![Node Version](https://img.shields.io/badge/node-v20.18.0-green)
+![Node.js](https://img.shields.io/badge/Node.js-v20.18.0-339933?logo=node.js&logoColor=white)
+![npm](https://img.shields.io/badge/npm-10.9.0-CB3837?logo=npm)
+![Java](https://img.shields.io/badge/OpenJDK-17-007396?logo=openjdk)
+![Android SDK](https://img.shields.io/badge/Android%20SDK-34-3DDC84?logo=android&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.6.3-3178C6?logo=typescript&logoColor=white)
 
 
 ## Version notes
