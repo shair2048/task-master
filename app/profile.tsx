@@ -23,12 +23,12 @@ const ProfileScreen = () => {
         const response = await api.get(`/account/${id}`);
         setUser(response.data);
       } catch (error) {
-        console.error("Failed to fetch leader's username", error);
+        console.error("Failed to fetch username", error);
       }
     };
 
     userInfos();
-  }, [user]);
+  }, []);
 
   const handleLogout = async () => {
     try {
