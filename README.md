@@ -1,10 +1,10 @@
 # Task Master App
+
 ![Node.js](https://img.shields.io/badge/Node.js-v20.18.0-339933?logo=node.js&logoColor=white)
 ![Yarn](https://img.shields.io/badge/Yarn-1.22.22-2C8EBB?logo=yarn)
 ![Java](https://img.shields.io/badge/OpenJDK-17-007396?logo=openjdk)
 ![Android SDK](https://img.shields.io/badge/Android%20SDK-34-3DDC84?logo=android&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6.3-3178C6?logo=typescript&logoColor=white)
-
 
 ## Set up environment with EAS CLI
 
@@ -35,3 +35,13 @@
     eas build --platform android --profile development
 
 #### Details information: https://docs.expo.dev/get-started/set-up-your-environment/?mode=development-build
+
+## Set up in project
+
+### Open terminal and run:
+
+    yarn install
+
+### After:
+
+    npx expo start
