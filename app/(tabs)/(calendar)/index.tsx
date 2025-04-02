@@ -15,26 +15,34 @@ type Task = {
   createdAt: string;
 };
 
-type MarkedDate = {
+type MultiPeriodMarkedDates = {
   [date: string]: {
-    startingDay?: boolean;
-    endingDay?: boolean;
-    color?: string;
-    textColor?: string;
-    marked?: boolean;
-    dotColor?: string;
+    periods: {
+      startingDay?: boolean;
+      endingDay?: boolean;
+      color?: string;
+      textColor?: string;
+      marked?: boolean;
+      dotColor?: string;
+    }[];
   };
 };
 
 const CalendarScreen = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [markedDates, setMarkedDates] = useState<MarkedDate>({});
+  const [markedDates, setMarkedDates] = useState<MultiPeriodMarkedDates>({});
   const [selectedTasks, setSelectedTasks] = useState<Task[]>([]);
 
   const convertToISOFormat = (dateStr: string): string => {
     if (!dateStr) return "";
     const [day, month, year] = dateStr.split("-");
     return `${year}-${month}-${day}`;
+  };
+
+  const getRandomColor = (index: number) => {
+    // return "#" + Math.floor(Math.random() * 16777215).toString(16);
+    const colors = ["#5f9ea0", "#ffa500", "#f0e68c", "#ff6347", "#9370db"];
+    return colors[index % colors.length];
   };
 
   const getDatesBetween = (startDate: string, endDate: string): string[] => {
@@ -73,23 +81,42 @@ const CalendarScreen = () => {
 
         setTasks(tasksData);
 
-        const newMarkedDates: MarkedDate = {};
-        tasksData.forEach((task: Task) => {
+        const newMarkedDates: MultiPeriodMarkedDates = {};
+        const datePeriodIndexMap: { [key: string]: number } = {};
+
+        tasksData.forEach((task: Task, index: number) => {
           const dates = getDatesBetween(task.createdAt, task.deadline);
           // console.log(dates);
+          const deadlineColor = getRandomColor(index);
 
           dates.forEach((date, index) => {
-            newMarkedDates[date] = {
-              ...(newMarkedDates[date] || {}),
-              color: "blue",
-              textColor: "white",
-            };
-            if (index === 0) {
-              newMarkedDates[date].startingDay = true;
+            if (!newMarkedDates[date]) {
+              newMarkedDates[date] = { periods: [] };
+              datePeriodIndexMap[date] = 0;
             }
-            if (index === dates.length - 1) {
-              newMarkedDates[date].endingDay = true;
-            }
+
+            // Tìm index phù hợp cho period mới
+            const currentIndex = datePeriodIndexMap[date];
+            datePeriodIndexMap[date] += 1;
+
+            // console.log(currentIndex);
+
+            // newMarkedDates[date].periods[currentIndex] = {
+            //   color: deadlineColor,
+            // };
+            newMarkedDates[date].periods.push({
+              color: deadlineColor,
+            });
+
+            // if (newMarkedDates[date].periods.length <= currentIndex) {
+            //   newMarkedDates[date].periods.push({
+            //     color: deadlineColor,
+            //   });
+            // } else {
+            //   newMarkedDates[date].periods.splice(currentIndex, 0, {
+            //     color: deadlineColor,
+            //   });
+            // }
           });
         });
 
@@ -118,7 +145,7 @@ const CalendarScreen = () => {
   return (
     <View style={calendarScreenStyles.container}>
       <Calendar
-        markingType={"period"}
+        markingType={"multi-period"}
         markedDates={markedDates}
         // theme={{
         //   selectedDayBackgroundColor: "blue",

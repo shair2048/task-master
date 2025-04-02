@@ -78,12 +78,11 @@ const SignInScreen = () => {
             router.push("/(admin)");
 
             return;
+          } else {
+            await AsyncStorage.setItem("authToken", token);
+            await AsyncStorage.setItem("userId", uid);
+            router.push("/(tabs)");
           }
-          // else {
-          //   await AsyncStorage.setItem("authToken", token);
-          //   await AsyncStorage.setItem("userId", uid);
-          //   router.push("/(tabs)");
-          // }
 
           // await AsyncStorage.setItem("authToken", token);
           // await AsyncStorage.setItem("userId", uid);

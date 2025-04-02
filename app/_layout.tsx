@@ -94,7 +94,7 @@ export default function RootLayout() {
                   <DefaultAvatar />
 
                   <View style={textStyles.baseText}>
-                    <Text style={textStyles.nameFont}>Tonald Drump</Text>
+                    <Text style={textStyles.nameFont}>Hoang</Text>
                     <Text style={textStyles.roleFont}>Admin</Text>
                   </View>
                 </TouchableOpacity>
