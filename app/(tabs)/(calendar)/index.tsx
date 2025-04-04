@@ -33,14 +33,7 @@ const CalendarScreen = () => {
   const [markedDates, setMarkedDates] = useState<MultiPeriodMarkedDates>({});
   const [selectedTasks, setSelectedTasks] = useState<Task[]>([]);
 
-  const convertToISOFormat = (dateStr: string): string => {
-    if (!dateStr) return "";
-    const [day, month, year] = dateStr.split("-");
-    return `${year}-${month}-${day}`;
-  };
-
-  const getRandomColor = (index: number) => {
-    // return "#" + Math.floor(Math.random() * 16777215).toString(16);
+  const getTaskColor = (index: number) => {
     const colors = ["#5f9ea0", "#ffa500", "#f0e68c", "#ff6347", "#9370db"];
     return colors[index % colors.length];
   };
@@ -54,12 +47,6 @@ const CalendarScreen = () => {
     const dates: string[] = [];
     const currentDate = convertToDateObject(startDate);
     const end = convertToDateObject(endDate);
-
-    // while (currentDate <= end) {
-    //   dates.push(currentDate.toISOString().split("T")[0]);
-    //   currentDate.setDate(currentDate.getDate() + 1);
-    // }
-    // dates.push(currentDate.toString()[0]);
 
     while (currentDate <= end) {
       dates.push(format(currentDate, "yyyy-MM-dd"));
@@ -82,41 +69,24 @@ const CalendarScreen = () => {
         setTasks(tasksData);
 
         const newMarkedDates: MultiPeriodMarkedDates = {};
-        const datePeriodIndexMap: { [key: string]: number } = {};
 
         tasksData.forEach((task: Task, index: number) => {
           const dates = getDatesBetween(task.createdAt, task.deadline);
-          // console.log(dates);
-          const deadlineColor = getRandomColor(index);
+          const periodColor = getTaskColor(index);
 
-          dates.forEach((date, index) => {
+          dates.forEach((date) => {
             if (!newMarkedDates[date]) {
               newMarkedDates[date] = { periods: [] };
-              datePeriodIndexMap[date] = 0;
             }
 
-            // Tìm index phù hợp cho period mới
-            const currentIndex = datePeriodIndexMap[date];
-            datePeriodIndexMap[date] += 1;
+            const periodsArray = newMarkedDates[date].periods;
 
-            // console.log(currentIndex);
+            // Thêm placeholder cho đến khi vị trí index tồn tại
+            while (periodsArray.length <= index) {
+              periodsArray.push({ color: "transparent" });
+            }
 
-            // newMarkedDates[date].periods[currentIndex] = {
-            //   color: deadlineColor,
-            // };
-            newMarkedDates[date].periods.push({
-              color: deadlineColor,
-            });
-
-            // if (newMarkedDates[date].periods.length <= currentIndex) {
-            //   newMarkedDates[date].periods.push({
-            //     color: deadlineColor,
-            //   });
-            // } else {
-            //   newMarkedDates[date].periods.splice(currentIndex, 0, {
-            //     color: deadlineColor,
-            //   });
-            // }
+            periodsArray[index] = { color: periodColor };
           });
         });
 
@@ -127,7 +97,6 @@ const CalendarScreen = () => {
     };
     taskInfo();
   }, [tasks]);
-  // console.log(tasks);
 
   const onDayPress = (day: { dateString: string }) => {
     const selectedDate = day.dateString;
